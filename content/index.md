@@ -1,6 +1,12 @@
 ---
 title: "The meta-engine for static sites"
 layout: home
+cta:
+  - label: "Get started"
+    url: "/docs/getting-started/"
+  - label: "Build a format pack"
+    url: "/docs/tutorials/build-a-format-pack/"
+    ghost: true
 ---
 
 Most static site generators bake in Markdown. **Fuego lets you define the format** — `.trivia`, `.card`, `.recipe`, anything — then use it to build a site, or package it as a **pack** the next person installs with one line.

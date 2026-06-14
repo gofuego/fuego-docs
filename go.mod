@@ -2,7 +2,10 @@ module github.com/gofuego/fuego-docs
 
 go 1.25.0
 
-require github.com/gofuego/fuego v0.3.4
+require (
+	github.com/gofuego/fuego v0.3.4
+	github.com/gofuego/fuego-doctheme v0.1.0
+)
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.10.0 // indirect
