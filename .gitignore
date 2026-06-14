@@ -1,0 +1,5 @@
+build/
+
+# local workspace (use the engine HEAD for authoring)
+go.work
+go.work.sum
