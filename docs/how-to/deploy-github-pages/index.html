@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Deploy to GitHub Pages — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/" class="current">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Deploy to GitHub Pages</h1>
+    <h2>Prerequisites</h2>
+<ul>
+<li>A GitHub repository with your Fuego site</li>
+<li>GitHub Pages enabled in repo settings (source: &quot;GitHub Actions&quot;)</li>
+</ul>
+<h2>1. Set the Base URL</h2>
+<p>In <code>config.yaml</code>, set <code>base_url</code> to your repository name:</p>
+<pre><code class="language-yaml">site:
+  name: &quot;My Site&quot;
+  base_url: &quot;/my-repo&quot;
+</code></pre>
+<p>GitHub Pages serves your site at <code>https://username.github.io/my-repo/</code>, so all links and asset paths need this prefix.</p>
+<h2>2. Use BaseURL in Templates</h2>
+<p>Make sure your <code>theme/base.html</code> uses <code>{{.Site.BaseURL}}</code> for all links:</p>
+<pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;{{.Site.BaseURL}}/style.css&quot;&gt;
+&lt;a href=&quot;{{.Site.BaseURL}}/index/&quot;&gt;Home&lt;/a&gt;
+</code></pre>
+<h2>3. Add a Root Redirect</h2>
+<p>The engine generates pages at <code>/{slug}/index.html</code>, so there's no <code>index.html</code> at the root. Add <code>public/index.html</code> to redirect:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0;url=index/&quot;&gt;&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h2>4. Create the Workflow</h2>
+<p>Create <code>.github/workflows/docs.yml</code>:</p>
+<pre><code class="language-yaml">name: Deploy Site
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: &quot;1.23&quot;
+      - run: go run . build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+</code></pre>
+<h2>5. Enable GitHub Pages</h2>
+<p>Go to your repository's Settings &gt; Pages and set the source to <strong>&quot;GitHub Actions&quot;</strong>.</p>
+<p>Push to <code>main</code> and the workflow will build and deploy your site automatically.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

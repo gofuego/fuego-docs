@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Tutorial: Your First Compiled Parser — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/" class="current">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Tutorial: Your First Compiled Parser</h1>
+    <p>Declarative parsers handle most use cases, but sometimes you need the full power of Go. In this tutorial you'll write a compiled parser for a <code>.recipe</code> format.</p>
+<h2>The Format</h2>
+<p>Recipe files look like this:</p>
+<pre><code>---
+title: Pancakes
+tags:
+  - breakfast
+---
+@ 2 cups flour
+@ 2 eggs
+@ 1 cup milk
+
+&gt; Mix dry ingredients
+&gt; Add wet ingredients and stir
+&gt; Cook on griddle until golden
+</code></pre>
+<p>Lines starting with <code>@</code> are ingredients. Lines starting with <code>&gt;</code> are steps.</p>
+<h2>1. Define the Parser</h2>
+<p>In your project, create <code>parser_recipe.go</code>:</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;strings&quot;
+    &quot;github.com/gofuego/fuego/core&quot;
+)
+
+type RecipeParser struct{}
+
+func (p *RecipeParser) Type() string { return &quot;recipe&quot; }
+
+func (p *RecipeParser) Parse(raw []byte) (core.Envelope, []core.Node, error) {
+    // The parser owns envelope extraction. SplitFrontmatter is the helper
+    // for formats that use YAML frontmatter; it returns the envelope and
+    // the remaining body.
+    env, body, err := core.SplitFrontmatter(raw)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    var nodes []core.Node
+    for _, line := range strings.Split(string(body), &quot;\n&quot;) {
+        line = strings.TrimSpace(line)
+        if line == &quot;&quot; {
+            continue
+        }
+        switch {
+        case strings.HasPrefix(line, &quot;@ &quot;):
+            nodes = append(nodes, core.Node{
+                Type:    &quot;ingredient&quot;,
+                Content: strings.TrimPrefix(line, &quot;@ &quot;),
+            })
+        case strings.HasPrefix(line, &quot;&gt; &quot;):
+            nodes = append(nodes, core.Node{
+                Type:    &quot;step&quot;,
+                Content: strings.TrimPrefix(line, &quot;&gt; &quot;),
+            })
+        }
+    }
+    return env, nodes, nil
+}
+</code></pre>
+<p>The <code>Parser</code> interface is <code>Parse(raw []byte) (Envelope, []Node, error)</code> — the
+parser receives the whole file and returns both metadata and nodes. For formats
+without frontmatter, return an empty <code>core.Envelope{}</code>; the <code>core.WithYAMLFrontmatter</code>
+and <code>core.WithNoEnvelope</code> wrappers cover the common cases if you'd rather not
+implement the interface directly.</p>
+<h2>2. Register It</h2>
+<p>In <code>main.go</code>, add one line:</p>
+<pre><code class="language-go">eng := engine.New()
+eng.Register(&amp;RecipeParser{})
+eng.Run(os.Args)
+</code></pre>
+<p>That's it. Fuego now knows how to parse <code>.recipe</code> files.</p>
+<h2>3. When to Use Compiled vs Declarative</h2>
+<p>Use <strong>declarative</strong> (config-only) when:</p>
+<ul>
+<li>Your format is line-oriented</li>
+<li>Simple regex rules can capture the structure</li>
+<li>You want non-developers to be able to define formats</li>
+</ul>
+<p>Use <strong>compiled</strong> (Go code) when:</p>
+<ul>
+<li>You need multi-line parsing (blocks, nesting)</li>
+<li>You need to call external libraries</li>
+<li>You need complex validation or transformation logic</li>
+<li>Performance matters (compiled parsers avoid regex overhead)</li>
+</ul>
+<p>Both produce the same <code>[]Node</code> output. The rest of the pipeline (routing, rendering, taxonomy indexing) works identically.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

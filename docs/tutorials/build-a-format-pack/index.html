@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Tutorial: Build a Format Pack — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/" class="current">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Tutorial: Build a Format Pack</h1>
+    <p>A <strong>format pack</strong> bundles parsers, hooks, theme templates, and config defaults into one installable Go module. In this tutorial you'll build a small <code>note</code> pack that turns <code>.note</code> files into styled callouts, and wire it into a site with one line.</p>
+<p>By the end you'll have a pack a stranger could <code>go get</code> and <code>eng.Use()</code>.</p>
+<h2>1. The parser</h2>
+<p>A note file is one callout per paragraph, tagged by kind:</p>
+<pre><code>info: Fuego ships zero built-in formats.
+warning: Parsers are opt-in — register them in main.go.
+</code></pre>
+<p>Create <code>note.go</code> in your pack module:</p>
+<pre><code class="language-go">package notepack
+
+import (
+	&quot;fmt&quot;
+	&quot;strings&quot;
+
+	&quot;github.com/gofuego/fuego/core&quot;
+)
+
+type noteParser struct{}
+
+func (noteParser) Type() string { return &quot;note&quot; }
+
+func (noteParser) Parse(raw []byte) (core.Envelope, []core.Node, error) {
+	env, body, err := core.SplitFrontmatter(raw)
+	if err != nil {
+		return nil, nil, err
+	}
+	var nodes []core.Node
+	for i, line := range strings.Split(strings.TrimSpace(string(body)), &quot;\n&quot;) {
+		line = strings.TrimSpace(line)
+		if line == &quot;&quot; {
+			continue
+		}
+		kind, text, ok := strings.Cut(line, &quot;:&quot;)
+		if !ok {
+			return nil, nil, &amp;core.ParseError{
+				Line: i + 1,
+				Err:  fmt.Errorf(&quot;note line missing \&quot;kind:\&quot; prefix&quot;),
+			}
+		}
+		nodes = append(nodes, core.Node{
+			Type:       &quot;note&quot;,
+			Content:    strings.TrimSpace(text),
+			Attributes: map[string]any{&quot;kind&quot;: strings.TrimSpace(kind)},
+		})
+	}
+	return env, nodes, nil
+}
+</code></pre>
+<p>The <code>core.ParseError</code> makes a malformed line report <code>file:line</code> in the build output — a small DX win that costs nothing.</p>
+<h2>2. The theme</h2>
+<p>Pack templates live in an embedded filesystem mirroring a theme directory. Add <code>theme/renderers/note.html</code>:</p>
+<pre><code class="language-html">&lt;div class=&quot;note note-{{.Attributes.kind}}&quot;&gt;{{.Content}}&lt;/div&gt;
+</code></pre>
+<p>Embed it in <code>notepack.go</code>:</p>
+<pre><code class="language-go">package notepack
+
+import (
+	&quot;embed&quot;
+	&quot;io/fs&quot;
+
+	&quot;github.com/gofuego/fuego/core&quot;
+)
+
+//go:embed theme
+var themeRoot embed.FS
+
+func Pack() core.Pack {
+	theme, _ := fs.Sub(themeRoot, &quot;theme&quot;)
+	return core.Pack{
+		Name:    &quot;note&quot;,
+		Parsers: []core.Parser{noteParser{}},
+		Theme:   theme,
+	}
+}
+</code></pre>
+<p>A user's own <code>theme/renderers/note.html</code> would override the pack's — packs lose to the user, always.</p>
+<h2>3. Config defaults</h2>
+<p>Let the pack route <code>.note</code> files without the user configuring anything. Add a <code>ConfigDefaults</code> YAML fragment:</p>
+<pre><code class="language-go">//go:embed config-defaults.yaml
+var configDefaults []byte
+</code></pre>
+<pre><code class="language-yaml"># config-defaults.yaml
+routes:
+  note: &quot;/notes/{slug}&quot;
+</code></pre>
+<p>Set <code>ConfigDefaults: configDefaults</code> on the returned <code>core.Pack</code>. The fragment is deep-merged beneath the user's <code>config.yaml</code>; the user can override <code>routes.note</code> and keep everything else. <code>fuego config</code> shows where each value came from.</p>
+<h2>4. Use it</h2>
+<p>In any Fuego site's <code>main.go</code>:</p>
+<pre><code class="language-go">eng := engine.New()
+eng.Use(notepack.Pack())
+</code></pre>
+<p>Drop a <code>.note</code> file in <code>content/</code>, run <code>fuego build</code>, and the callouts render through the pack's theme — no parser code, no template, no route config in the consuming site.</p>
+<h2>Distributing it</h2>
+<p>Publish the pack as a tagged Go module. Because its package exports
+<code>Pack() core.Pack</code>, anyone can scaffold a project with it pre-installed:</p>
+<pre><code class="language-bash">fuego init mysite --pack github.com/you/notepack
+</code></pre>
+<p><code>init</code> imports the module, wires <code>eng.Use(notepack.Pack())</code> into <code>main.go</code>, and
+<code>go get</code>s it — without compiling or running your code. The package name
+defaults to the module path's last segment; if yours differs, consumers pass
+<code>--pack-symbol</code>.</p>
+<h2>What you learned</h2>
+<ul>
+<li>A pack is a plain Go module exporting <code>Pack() core.Pack</code>.</li>
+<li>It can carry parsers, hooks (<code>AfterParse</code>, <code>Index</code>, <code>BeforeRender</code>), an embedded theme, static assets, and config defaults.</li>
+<li>Precedence always favors the user: user parsers, user theme files, and user config win over the pack.</li>
+<li>Consumers install it with one line — <code>eng.Use(...)</code> — or scaffold with <code>fuego init --pack</code>.</li>
+</ul>
+<p>See <a href="/docs/concepts/format-packs/">Format Packs</a> for the full reference and <a href="/docs/config-merging/">Config Merging</a> for the merge rules.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

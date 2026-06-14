@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>The Build Pipeline — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/" class="current">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>The Build Pipeline</h1>
+    <p>Every Fuego command runs the same pipeline. Understanding the phases helps you predict behavior, debug issues, and write effective hooks.</p>
+<h2>Phase Diagram</h2>
+<pre><code>PREBUILD       →  shell hook (npm, tailwind, etc.)
+INIT           →  merge declarative + compiled parsers
+DISCOVER       →  walk content dir, apply ignore patterns
+PARSE          →  split frontmatter, run parsers (concurrent)
+  ↓ AfterParse hooks
+ROUTE          →  resolve URLs, detect collisions
+INDEX          →  build taxonomies + collections, paginate
+  ↓ Index hooks          (add virtual pages → collision re-check)
+  ↓ BeforeRender hooks
+RENDER         →  execute templates (concurrent)
+OUTPUTS        →  render theme/outputs/ (feeds, sitemaps)
+MANIFEST       →  write site-manifest.json
+STATIC         →  copy public/ and colocated assets
+</code></pre>
+<h2>Phase Details</h2>
+<h3>PREBUILD</h3>
+<p>Runs the shell command from <code>config.yaml</code>'s <code>prebuild</code> field. This is for external tooling — Tailwind CSS compilation, npm scripts, asset preprocessing. Runs before any Fuego logic.</p>
+<h3>INIT</h3>
+<p>Merges parser sources in priority order — there are no built-in parsers:</p>
+<ol>
+<li><strong>Declarative</strong> (regex rules from config) — lower priority</li>
+<li><strong>Compiled</strong> (Go code via <code>eng.Register()</code>, including pack parsers via <code>eng.Use()</code>) — higher priority</li>
+</ol>
+<p>If two parsers target the same file extension, the higher-priority one wins. Markdown is a first-party compiled parser you opt into with <code>eng.Register(markdown.Parser())</code>.</p>
+<h3>DISCOVER</h3>
+<p>Walks the <code>content/</code> directory and classifies each file:</p>
+<ul>
+<li><strong>Content files</strong> — matched to a parser by extension (<code>.md</code>, <code>.trivia</code>, <code>.card</code>, etc.)</li>
+<li><strong>Binary assets</strong> — images, fonts, etc. — copied to output alongside their routed content</li>
+<li><strong>Ignored files</strong> — matched by <code>ignore</code> glob patterns in config</li>
+</ul>
+<h3>PARSE</h3>
+<p>For each content file, in parallel:</p>
+<ol>
+<li>Split the file at <code>---</code> delimiters to extract YAML frontmatter (the envelope) and the raw payload</li>
+<li>Dispatch the payload to the matching parser</li>
+<li>The parser returns <code>[]Node</code> — the universal AST</li>
+</ol>
+<p>Concurrency is bounded by <code>runtime.NumCPU()</code> via <code>errgroup</code>.</p>
+<h3>ROUTE</h3>
+<p>Assigns a URL to each page using three-tier priority:</p>
+<ol>
+<li>Frontmatter <code>slug</code> field — overrides the slug segment</li>
+<li>Config <code>routes[type]</code> pattern — pattern expansion with <code>{dir}</code>, <code>{slug}</code>, <code>{filename}</code></li>
+<li>Filesystem mirror — the default</li>
+</ol>
+<p>After resolution, checks for URL collisions. A collision is a <code>GlobalFatal</code> error that stops the build.</p>
+<h3>INDEX</h3>
+<p>Generates virtual pages for taxonomies and collections:</p>
+<ul>
+<li><strong>Taxonomy term pages</strong> — one per unique term value (e.g., <code>/tags/go/</code>)</li>
+<li><strong>Taxonomy index pages</strong> — list all terms (e.g., <code>/tags/</code>)</li>
+<li><strong>Collection pages</strong> — glob-matched, sorted listing pages</li>
+</ul>
+<p>Listings with <code>page_size</code> set are split into numbered pages (<code>/blog/</code>, <code>/blog/page/2/</code>, …), each carrying a <code>.Paginator</code>. <strong>Index hooks</strong> run here too — the supported place to add your own virtual pages, since their URLs go through the collision re-check that catches conflicts between virtual and real pages.</p>
+<h3>RENDER</h3>
+<p>For each page, in parallel:</p>
+<ol>
+<li>Pre-render nodes to HTML using the default renderer (or per-type renderer templates)</li>
+<li>Build the template data (<code>.Page</code>, <code>.Site</code>, <code>.Paginator</code>, <code>.JSON</code>)</li>
+<li>Execute the base template with the selected layout</li>
+<li>Write <code>{url}/index.html</code> to the output directory</li>
+</ol>
+<p>Pages marked <code>Skip</code> by a hook are excluded from RENDER and the manifest.</p>
+<h3>OUTPUTS</h3>
+<p>Renders every file under <code>theme/outputs/</code> as a text template fed with <code>.Site</code>, writing non-HTML site assets — RSS feeds, sitemaps, <code>robots.txt</code>, search indexes — to matching output paths. See <a href="/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a>.</p>
+<h3>MANIFEST</h3>
+<p>Writes <code>site-manifest.json</code> — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its <code>url</code>, <code>type</code>, <code>layout</code>, <code>title</code>, <code>output_path</code> (the generated file, e.g. <code>blog/post/index.html</code>), and <code>source_path</code> (the source file relative to the content directory — empty for virtual pages); the top-level <code>content_root</code> is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.</p>
+<h3>STATIC</h3>
+<p>Copies static assets to the output root, in precedence order: each registered pack's <code>static/</code> subtree first, then the user's <code>public/</code> directory (so user files win on conflict), then content-colocated binary assets at their routed paths.</p>
+<h2>Partial Execution</h2>
+<p><code>validate</code> runs through INDEX without RENDER — catching config errors, parse failures, and collisions without producing output. <code>list</code> runs through ROUTE and prints the page table. This is controlled by <code>pipeline.RunUntil(phase)</code>.</p>
+<h2>Incremental Builds</h2>
+<p><code>fuego build --incremental</code> (and the dev server, always) keeps an on-disk cache of parsed pages so unchanged content isn't re-parsed on every rebuild.</p>
+<p>The cache is keyed by a header — a hash of the <strong>engine binary</strong>, the <strong>resolved config</strong>, and the <strong>theme tree</strong> — plus a per-file <strong>content hash</strong>:</p>
+<ul>
+<li>If the header matches, content files whose hash is unchanged skip PARSE and are restored from cache; changed and new files are parsed normally; deleted files have their output removed (orphan cleanup via a manifest-style diff).</li>
+<li>If the header doesn't match — you rebuilt the engine, edited <code>config.yaml</code>, or touched a template — the whole cache is discarded and the build falls back to a full, clean rebuild.</li>
+</ul>
+<p>ROUTE and INDEX always run over the full page set (they are cheap, <code>O(pages)</code> map work). RENDER is <strong>narrowed</strong> to the pages whose output can actually differ: the changed/new pages, every virtual page (taxonomy, collection, pagination — they aggregate content), and any page whose template reads <code>.Site.Pages</code> directly or through a partial. Pages with a site-blind layout that didn't change keep their existing HTML. On a 10k-page site, a single-file edit rebuilds in a fraction of a full build.</p>
+<p>Despite the narrowing, an incremental build produces <strong>byte-identical output to a clean build</strong> of the same inputs. That guarantee is enforced in CI: every fixture is built clean and then incrementally under each mutation (edit, add, delete, theme touch, config touch) and the output trees are compared byte-for-byte. A corrupt or version-mismatched cache is treated as a miss, never an error.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

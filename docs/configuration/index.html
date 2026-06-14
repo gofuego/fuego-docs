@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Configuration — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/" class="current">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Configuration</h1>
+    <p>All configuration lives in <code>config.yaml</code> at the project root.</p>
+<h2>Site</h2>
+<pre><code class="language-yaml">site:
+  name: &quot;My Site&quot;
+  base_url: &quot;https://example.com&quot;
+</code></pre>
+<h2>Routes</h2>
+<p>Three-tier URL resolution: frontmatter <code>slug</code> &gt; config route pattern &gt; filesystem mirror.</p>
+<pre><code class="language-yaml">routes:
+  trivia: &quot;/quiz/{dir}/{slug}&quot;
+  card: &quot;/cards/{slug}&quot;
+</code></pre>
+<p><strong>Placeholders:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Expands to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{dir}</code></td>
+<td>Directory path relative to content root</td>
+</tr>
+<tr>
+<td><code>{slug}</code></td>
+<td>Filename without extension</td>
+</tr>
+<tr>
+<td><code>{filename}</code></td>
+<td>Full filename with extension</td>
+</tr>
+</tbody>
+</table>
+<h2>Ignore Patterns</h2>
+<p>Doublestar glob patterns to skip files during discovery:</p>
+<pre><code class="language-yaml">ignore:
+  - &quot;**/.DS_Store&quot;
+  - &quot;**/drafts/*&quot;
+</code></pre>
+<h2>Taxonomies</h2>
+<p>Two-tier taxonomy pages — a page per term, plus an index listing all terms:</p>
+<pre><code class="language-yaml">taxonomies:
+  tags:
+    path: &quot;/tags/{term}&quot;
+    layout: &quot;tag&quot;
+    index_path: &quot;/tags&quot;
+    index_layout: &quot;tag-index&quot;
+    page_size: 10          # optional: paginate term pages
+</code></pre>
+<p>Pages with a <code>tags</code> field in frontmatter are automatically indexed. Virtual pages for each term and the index are generated during the INDEX phase. With <code>page_size</code> set, term pages over that size split into <code>/tags/{term}/page/{n}/</code> — see <a href="/docs/how-to/paginate-a-collection/">Paginate a Collection</a>.</p>
+<h2>Collections</h2>
+<p>Glob-matched, sorted listing pages:</p>
+<pre><code class="language-yaml">collections:
+  history-quiz:
+    match: &quot;trivia/history/**&quot;
+    sort_by: &quot;points&quot;
+    layout: &quot;listing&quot;
+    path: &quot;/history-quiz&quot;
+    page_size: 10          # optional: split into /history-quiz/page/{n}/
+</code></pre>
+<h2>Packs</h2>
+<p>Each registered <a href="/docs/concepts/format-packs/">format pack</a> reads its own <code>packs.{name}:</code> subtree. The engine routes the subtree to the pack; the pack validates and interprets it in Go.</p>
+<pre><code class="language-yaml">packs:
+  adr:
+    status_workflow: [proposed, accepted, superseded]
+    diagram: true
+</code></pre>
+<p>A subtree whose name matches no registered pack logs a warning.</p>
+<h2>Static Files</h2>
+<ul>
+<li><code>public/</code> directory contents are copied to the output root</li>
+<li>Binary files colocated with content (images, etc.) are mirrored to their routed paths</li>
+</ul>
+<h2>Prebuild Hook</h2>
+<p>Run a shell command before each build:</p>
+<pre><code class="language-yaml">prebuild: &quot;npm run build:css&quot;
+</code></pre>
+<h2>Dev Server</h2>
+<pre><code class="language-yaml">dev:
+  port: 8080
+  command: &quot;npx vite --port 5173&quot;
+  proxy_port: 5173
+</code></pre>
+<p>The dev server proxies asset requests to the specified port when <code>command</code> and <code>proxy_port</code> are set.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

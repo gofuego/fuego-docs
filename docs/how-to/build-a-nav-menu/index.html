@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Build a Navigation Menu — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/" class="current">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Build a Navigation Menu</h1>
+    <p>Templates can see every page on the site through <code>.Site.Pages</code> — no Go code needed for navs, listings, or related-content blocks.</p>
+<h2>What <code>.Site.Pages</code> contains</h2>
+<p>A URL-sorted slice of slim page references, one per page (including taxonomy and collection virtual pages, excluding pages marked <code>Skip</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.URL</code></td>
+<td>Resolved URL</td>
+</tr>
+<tr>
+<td><code>.Type</code></td>
+<td>Content type</td>
+</tr>
+<tr>
+<td><code>.Layout</code></td>
+<td>Layout name</td>
+</tr>
+<tr>
+<td><code>.Envelope</code></td>
+<td>Frontmatter map</td>
+</tr>
+</tbody>
+</table>
+<p>Refs deliberately omit page bodies: they exist for navigation and querying, not for rendering other pages' content.</p>
+<h2>A nav partial</h2>
+<p>Create <code>theme/partials/nav.html</code>:</p>
+<pre><code class="language-html">&lt;nav&gt;
+    &lt;ul&gt;
+    {{- range sortBy (where .Site.Pages &quot;type&quot; &quot;doc&quot;) &quot;weight&quot;}}
+        &lt;li&gt;&lt;a href=&quot;{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;&lt;/li&gt;
+    {{- end}}
+    &lt;/ul&gt;
+&lt;/nav&gt;
+</code></pre>
+<p>Call it from <code>base.html</code>:</p>
+<pre><code class="language-html">{{partial &quot;nav&quot; .}}
+</code></pre>
+<p>Pages opt into the menu with frontmatter:</p>
+<pre><code class="language-yaml">title: Install
+type: doc
+weight: 1
+</code></pre>
+<p><code>where</code> filters by map key, struct field (case-insensitive), or envelope key — <code>&quot;type&quot;</code> matches the ref's <code>Type</code>, <code>&quot;weight&quot;</code> matches <code>Envelope[&quot;weight&quot;]</code>. <code>sortBy</code> sorts numbers numerically and copies before sorting, so the shared ref slice is never mutated.</p>
+<h2>Listing taxonomy terms</h2>
+<p>Virtual pages appear in the refs like any other page, so a tag cloud is a filter away:</p>
+<pre><code class="language-html">{{range .Site.Pages}}{{if eq .Type &quot;taxonomy-term&quot;}}
+    &lt;a href=&quot;{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;
+{{end}}{{end}}
+</code></pre>
+<h2>Related pages</h2>
+<p>Inside a page template, query against the current page's envelope:</p>
+<pre><code class="language-html">{{$current := .Page}}
+{{range where .Site.Pages &quot;category&quot; $current.Envelope.category | limit 5}}
+    {{if ne .URL $current.URL}}&lt;a href=&quot;{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;{{end}}
+{{end}}
+</code></pre>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

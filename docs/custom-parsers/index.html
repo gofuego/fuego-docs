@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Custom Parsers — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/" class="current">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Custom Parsers</h1>
+    <p>Fuego supports two ways to define content parsers: declarative (config-only) and compiled (Go code). Both produce the same universal AST.</p>
+<h2>Universal AST</h2>
+<p>All parsers produce <code>[]Node</code>:</p>
+<pre><code class="language-go">type Node struct {
+    Type       string
+    Attributes map[string]any
+    Content    string
+    Children   []Node
+    Raw        bool // pass Content through as raw HTML, unwrapped and unescaped
+}
+</code></pre>
+<p>The engine never interprets node types. Your templates decide how <code>question</code>, <code>front</code>, <code>answer</code>, or any other type renders.</p>
+<h2>Declarative Parsers</h2>
+<p>Define parsers with ordered regex rules in <code>config.yaml</code>. No Go code needed:</p>
+<pre><code class="language-yaml">parsers:
+  trivia:
+    rules:
+      - match: '^\?\s*(.+)$'
+        emit:
+          type: question
+          content: &quot;$1&quot;
+      - match: '^\[([A-Z])\]\s+(.+)$'
+        emit:
+          type: answer
+          content: &quot;$2&quot;
+          attributes:
+            letter: &quot;$1&quot;
+</code></pre>
+<p>This parses <code>.trivia</code> files line-by-line. First matching rule wins per line. Capture groups (<code>$1</code>, <code>$2</code>) are substituted into content and attributes.</p>
+<h2>Compiled Parsers</h2>
+<p>Implement the <code>core.Parser</code> interface for full control. The parser receives the entire raw file and owns envelope extraction:</p>
+<pre><code class="language-go">type Parser interface {
+    Type() string
+    Parse(raw []byte) (Envelope, []Node, error)
+}
+</code></pre>
+<p>Use <code>core.SplitFrontmatter(raw)</code> if your format carries YAML frontmatter, or the convenience wrappers <code>core.WithYAMLFrontmatter(...)</code> / <code>core.WithNoEnvelope(...)</code> for the common cases. For extensionless files like <code>Dockerfile</code>, also implement <code>core.FilenameParser</code> with <code>Filenames() []string</code>.</p>
+<p>Register it in <code>main.go</code>:</p>
+<pre><code class="language-go">eng := engine.New()
+eng.Register(&amp;MyCustomParser{})
+eng.Run(os.Args)
+</code></pre>
+<h2>Error Positions</h2>
+<p>Return a <code>core.ParseError</code> to point build errors at a source line:</p>
+<pre><code class="language-go">return nil, nil, &amp;core.ParseError{
+    Line: lineNo,
+    Err:  fmt.Errorf(&quot;unexpected token %q&quot;, tok),
+}
+</code></pre>
+<p>The build output then reads <code>[PARSE] error content/quiz.trivia:7: ...</code>. Reporting positions is optional — plain errors keep working. Frontmatter errors from <code>core.SplitFrontmatter</code> carry file-relative line numbers automatically.</p>
+<h2>Parser Precedence</h2>
+<p>There are no built-in parsers — the engine ships with zero format opinions. When multiple parsers exist for the same file extension:</p>
+<ol>
+<li><strong>Compiled</strong> (registered via <code>eng.Register()</code>) — wins</li>
+<li><strong>Declarative</strong> (defined in <code>config.yaml</code>)</li>
+</ol>
+<p>A file is discovered as content only if a registered parser matches its extension or filename.</p>
+<h2>Markdown (opt-in)</h2>
+<p>Markdown is a first-party, opt-in parser — not a built-in. Register it like any other compiled parser:</p>
+<pre><code class="language-go">import &quot;github.com/gofuego/fuego/parsers/markdown&quot;
+
+eng.Register(markdown.Parser())
+</code></pre>
+<p>It uses goldmark with GitHub-Flavored Markdown (tables, strikethrough, autolinks, task lists) and emits a single node with <code>Raw: true</code> containing the rendered HTML.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

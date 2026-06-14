@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Embedding Fuego — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/" class="current">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Embedding Fuego</h1>
+    <p>Fuego isn't only a CLI — it's a library for <strong>building your own static site
+generator</strong>. A domain-specific tool (an ADR site builder, an infra-diagram
+generator, a changelog publisher) is typically a <a href="/docs/concepts/format-packs/">format pack</a>
+plus a thin program that drives the engine in-process. <a href="https://github.com/gofuego/fuego-adr">fuego-adr</a>
+is exactly this shape.</p>
+<h2>Two ways to drive the engine</h2>
+<pre><code class="language-go">eng := engine.New()
+eng.Register(markdown.Parser())
+eng.Use(mypack.Pack())
+</code></pre>
+<p>From there you either:</p>
+<ul>
+<li><strong><code>eng.Run(os.Args)</code></strong> — hand control to Fuego's CLI (<code>build</code>, <code>serve</code>,
+<code>config</code>, …), which reads a <code>config.yaml</code> from disk. This is what a scaffolded
+<code>main.go</code> does.</li>
+<li><strong>The programmatic API</strong> — <code>eng.Build</code>, <code>eng.Serve</code>, <code>eng.Validate</code> — build
+in-process with configuration supplied in Go. This is what a domain-specific
+tool with its own CLI uses, so it never has to synthesize a temp config file.</li>
+</ul>
+<h2>Programmatic build</h2>
+<pre><code class="language-go">import (
+	&quot;context&quot;
+	&quot;github.com/gofuego/fuego/engine&quot;
+)
+
+func main() {
+	eng := engine.New()
+	eng.Use(mypack.Pack())
+
+	err := eng.Build(context.Background(), engine.BuildOptions{
+		ContentDir: &quot;docs/decisions&quot;,
+		OutputDir:  &quot;build&quot;,
+		SiteName:   &quot;Engineering Decisions&quot;,
+		BaseURL:    &quot;/decisions&quot;,
+	})
+	if err != nil {
+		// handle
+	}
+}
+</code></pre>
+<p><code>engine.Serve(ctx, opts)</code> runs the dev server (initial build, watch, live
+reload, HTTP); <code>engine.Validate(ctx, opts)</code> runs the pipeline through INDEX
+without rendering and returns the page count — a CI gate.</p>
+<h3>BuildOptions</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ConfigPath</code></td>
+<td>Optional base <code>config.yaml</code> to start from</td>
+</tr>
+<tr>
+<td><code>ContentDir</code> / <code>ThemeDir</code> / <code>OutputDir</code> / <code>StaticDir</code></td>
+<td>Directory overrides (packs may supply the theme)</td>
+</tr>
+<tr>
+<td><code>SiteName</code> / <code>BaseURL</code></td>
+<td>Site metadata</td>
+</tr>
+<tr>
+<td><code>DevPort</code> / <code>DevCommand</code> / <code>ProxyPort</code></td>
+<td>Dev-server settings (<code>Serve</code>)</td>
+</tr>
+<tr>
+<td><code>Incremental</code> / <code>CacheDir</code></td>
+<td>Reuse cached parses for unchanged content</td>
+</tr>
+</tbody>
+</table>
+<h3>Configuration resolution</h3>
+<p>The effective config is layered, lowest precedence first:</p>
+<ol>
+<li><strong>Registered packs' config defaults</strong> (<code>Pack.ConfigDefaults</code>)</li>
+<li><strong><code>ConfigPath</code></strong> file, if given</li>
+<li><strong><code>BuildOptions</code></strong> fields (the non-zero overrides above)</li>
+</ol>
+<p>So a pack contributes routes and taxonomies, an optional file adds project
+config, and your tool sets the dirs and site metadata on top — all deep-merged
+(<a href="/docs/config-merging/">Config Merging</a>).</p>
+<h2>Building a tool</h2>
+<p>The recommended shape, as used by fuego-adr:</p>
+<ol>
+<li>Put all domain logic in a <strong>pack</strong> — parser, theme (with <code>static/</code> assets),
+<code>ConfigDefaults</code>, and hooks. Export <code>Pack() core.Pack</code>.</li>
+<li>Write a small CLI that builds <code>BuildOptions</code> from its own flags and calls
+<code>eng.Use(yourpack.Pack())</code> + <code>eng.Build/Serve/Validate</code>.</li>
+</ol>
+<p>Users then get both: your branded CLI, and the ability to drop your pack into
+any Fuego project with one line. See the
+<a href="/docs/tutorials/build-a-format-pack/">Build a Format Pack</a> tutorial.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

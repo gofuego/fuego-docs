@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Templates — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/" class="current">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Templates</h1>
+    <p>Templates use Go's <code>html/template</code>. The theme directory structure:</p>
+<pre><code>theme/
+  base.html              # HTML shell (required)
+  layouts/
+    post.html            # named layouts
+    tag.html
+  renderers/
+    question.html        # per-node-type renderers
+  partials/
+    nav.html             # reusable snippets, called via {{partial &quot;nav&quot; .}}
+</code></pre>
+<h2>Base Template</h2>
+<p>The base template is required. It defines the HTML shell:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;{{.Page.Envelope.title}} | {{.Site.Name}}&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+{{block &quot;content&quot; .}}&lt;div id=&quot;root&quot;&gt;{{.Page.Content}}&lt;/div&gt;{{end}}
+&lt;script type=&quot;application/json&quot; id=&quot;fuego-data&quot;&gt;{{.JSON}}&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h2>Layout Templates</h2>
+<p>Layouts override the <code>&quot;content&quot;</code> block defined in the base template:</p>
+<pre><code class="language-html">{{define &quot;content&quot;}}
+&lt;article class=&quot;post&quot;&gt;{{.Page.Content}}&lt;/article&gt;
+{{end}}
+</code></pre>
+<p>Set a page's layout via frontmatter (<code>layout: post</code>) or config (taxonomies, collections).</p>
+<h2>Renderer Templates</h2>
+<p>Per-node-type renderer templates override the default <code>&lt;div data-type=&quot;...&quot;&gt;</code> rendering. Place them in <code>theme/renderers/{type}.html</code>.</p>
+<p>For example, <code>theme/renderers/question.html</code> controls how <code>question</code> nodes render.</p>
+<h2>Partials</h2>
+<p>Partials are reusable template snippets in <code>theme/partials/</code>. They are available in the base template, layouts, and renderers via the <code>partial</code> function:</p>
+<pre><code class="language-html">{{partial &quot;nav&quot; .}}
+{{partial &quot;footer&quot; (dict &quot;year&quot; &quot;2026&quot; &quot;owner&quot; .Site.Name)}}
+</code></pre>
+<p>The second argument becomes the partial's data (<code>.</code>); omit it to pass nothing. Partials can call other partials. Calling a partial that does not exist fails the page render with an error listing the available partials.</p>
+<h2>Template Functions</h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>render</code></td>
+<td><code>{{render .Page.Nodes}}</code></td>
+<td>Recursively render nodes through renderer templates</td>
+</tr>
+<tr>
+<td><code>safeHTML</code></td>
+<td><code>{{safeHTML .Page.Envelope.snippet}}</code></td>
+<td>Mark a string as raw HTML (skips escaping)</td>
+</tr>
+<tr>
+<td><code>partial</code></td>
+<td><code>{{partial &quot;nav&quot; .}}</code></td>
+<td>Execute a template from <code>theme/partials/</code></td>
+</tr>
+<tr>
+<td><code>dict</code></td>
+<td><code>{{dict &quot;k1&quot; &quot;v1&quot; &quot;k2&quot; &quot;v2&quot;}}</code></td>
+<td>Build a map from key/value pairs, for partial arguments</td>
+</tr>
+<tr>
+<td><code>where</code></td>
+<td><code>{{where .Site.Pages &quot;type&quot; &quot;post&quot;}}</code></td>
+<td>Filter a slice by key = value</td>
+</tr>
+<tr>
+<td><code>sortBy</code></td>
+<td><code>{{sortBy .Site.Pages &quot;weight&quot; &quot;desc&quot;}}</code></td>
+<td>Copy-and-sort a slice by key; optional <code>&quot;asc&quot;</code>/<code>&quot;desc&quot;</code></td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td><code>{{where .Site.Pages &quot;type&quot; &quot;post&quot; | limit 5}}</code></td>
+<td>At most n leading elements (collection last, pipeline-friendly)</td>
+</tr>
+<tr>
+<td><code>first</code></td>
+<td><code>{{first .Site.Pages}}</code></td>
+<td>First element, or nil if empty</td>
+</tr>
+<tr>
+<td><code>dateFormat</code></td>
+<td><code>{{dateFormat &quot;Jan 2, 2006&quot; .Page.Envelope.date}}</code></td>
+<td>Format a <code>time.Time</code> or date string with a Go layout</td>
+</tr>
+</tbody>
+</table>
+<p>Key resolution for <code>where</code> and <code>sortBy</code>: map keys for maps, exported struct fields (case-insensitive), then the element's <code>Envelope</code> map — so <code>&quot;type&quot;</code> matches a page ref's <code>Type</code> field and <code>&quot;author&quot;</code> matches <code>Envelope[&quot;author&quot;]</code>. <code>where</code> compares loosely (values match if their string forms are equal), so YAML numbers and template string literals compare predictably. <code>sortBy</code> sorts numbers numerically and everything else by string form; elements missing the key sort first.</p>
+<p><code>dateFormat</code> accepts <code>time.Time</code> or strings in RFC3339, <code>2006-01-02T15:04:05</code>, <code>2006-01-02 15:04:05</code>, or <code>2006-01-02</code>.</p>
+<h2>Template Data</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.Page.Envelope</code></td>
+<td>Frontmatter map</td>
+</tr>
+<tr>
+<td><code>.Page.Content</code></td>
+<td>Pre-rendered HTML</td>
+</tr>
+<tr>
+<td><code>.Page.URL</code></td>
+<td>Resolved URL</td>
+</tr>
+<tr>
+<td><code>.Page.Layout</code></td>
+<td>Layout name</td>
+</tr>
+<tr>
+<td><code>.Page.Type</code></td>
+<td>Parser type</td>
+</tr>
+<tr>
+<td><code>.Site.Name</code></td>
+<td>From config</td>
+</tr>
+<tr>
+<td><code>.Site.BaseURL</code></td>
+<td>From config</td>
+</tr>
+<tr>
+<td><code>.Site.Pages</code></td>
+<td>All pages as slim refs (<code>.URL</code>, <code>.Type</code>, <code>.Layout</code>, <code>.Envelope</code>), URL-sorted — see <a href="/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></td>
+</tr>
+<tr>
+<td><code>.Paginator</code></td>
+<td>On paginated listing pages: <code>.CurrentPage</code>, <code>.TotalPages</code>, <code>.PrevURL</code>, <code>.NextURL</code> (nil otherwise) — see <a href="/docs/how-to/paginate-a-collection/">Paginate a Collection</a></td>
+</tr>
+<tr>
+<td><code>.JSON</code></td>
+<td>Full page data as JSON (computed only if the template references it)</td>
+</tr>
+</tbody>
+</table>
+<h2>JSON Embed</h2>
+<p>Embedding <code>{{.JSON}}</code> in your base template or a layout gives the page its full data (envelope, parsed nodes, URL) as JSON, typically inside <code>&lt;script type=&quot;application/json&quot; id=&quot;fuego-data&quot;&gt;</code>. This enables client-side interactivity without a separate API.</p>
+<p>The payload is computed only for pages whose template actually references <code>.JSON</code> — Fuego inspects templates at load time, so sites that never hydrate pay no serialization cost. There is no configuration for this; using <code>.JSON</code> anywhere in a template (including inside <code>if</code>/<code>range</code> blocks or via <code>$.JSON</code>) enables it for pages rendered with that template.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

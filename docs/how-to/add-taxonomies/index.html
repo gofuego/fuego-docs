@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Add Taxonomies — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/" class="current">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Add Taxonomies</h1>
+    <p>Taxonomies create automatic index pages from frontmatter fields. This guide shows how to add tag pages to your site.</p>
+<h2>1. Declare the Taxonomy</h2>
+<p>In <code>config.yaml</code>:</p>
+<pre><code class="language-yaml">taxonomies:
+  tags:
+    path: &quot;/tags/{term}&quot;
+    layout: &quot;tag&quot;
+    index_path: &quot;/tags&quot;
+    index_layout: &quot;tag-index&quot;
+</code></pre>
+<h2>2. Tag Your Content</h2>
+<p>Add a <code>tags</code> field to any content file's frontmatter:</p>
+<pre><code class="language-yaml">---
+title: My Post
+tags:
+  - go
+  - web
+---
+</code></pre>
+<h2>3. Create the Tag Layout</h2>
+<p>Create <code>theme/layouts/tag.html</code> to display pages tagged with a specific term:</p>
+<pre><code class="language-html">{{define &quot;content&quot;}}
+&lt;h1&gt;{{.Page.Envelope.title}}&lt;/h1&gt;
+&lt;ul&gt;
+{{.Page.Content}}
+&lt;/ul&gt;
+{{end}}
+</code></pre>
+<p>The content contains <code>page-ref</code> nodes — each rendered as a <code>&lt;div&gt;</code> with <code>data-type=&quot;page-ref&quot;</code> and <code>data-attrs</code> containing <code>url</code>, <code>title</code>, and <code>type</code>. You can style these with CSS:</p>
+<pre><code class="language-css">[data-type=&quot;page-ref&quot;] { margin: .5rem 0; }
+</code></pre>
+<h2>4. Create the Tag Index Layout</h2>
+<p>Create <code>theme/layouts/tag-index.html</code> to list all tags:</p>
+<pre><code class="language-html">{{define &quot;content&quot;}}
+&lt;h1&gt;{{.Page.Envelope.title}}&lt;/h1&gt;
+&lt;ul&gt;
+{{.Page.Content}}
+&lt;/ul&gt;
+{{end}}
+</code></pre>
+<p>The content contains <code>term-ref</code> nodes with attributes <code>term</code>, <code>count</code>, and <code>url</code>.</p>
+<h2>How It Works</h2>
+<p>During the INDEX phase, Fuego scans every page's frontmatter for the declared taxonomy fields. It builds an inverted index (term to list of pages) and generates two kinds of virtual pages:</p>
+<ul>
+<li><strong>Term pages</strong> — one per unique term (e.g., <code>/tags/go/</code>), containing <code>page-ref</code> nodes for each tagged page</li>
+<li><strong>Index page</strong> — lists all terms (e.g., <code>/tags/</code>), containing <code>term-ref</code> nodes with page counts</li>
+</ul>
+<p>These virtual pages flow through RENDER like any other page, using the layouts you specify.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

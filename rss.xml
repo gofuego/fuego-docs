@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Fuego</title>
+    <link>/fuego-docs</link>
+    <description>Documentation for the Fuego static site engine.</description>
+    <item>
+      <title>CLI Reference</title>
+      <link>/fuego-docs/docs/cli/</link>
+    </item>
+    <item>
+      <title>The Build Pipeline</title>
+      <link>/fuego-docs/docs/concepts/build-pipeline/</link>
+    </item>
+    <item>
+      <title>Embedding Fuego</title>
+      <link>/fuego-docs/docs/concepts/embedding/</link>
+    </item>
+    <item>
+      <title>Why Format-Agnostic?</title>
+      <link>/fuego-docs/docs/concepts/format-agnostic/</link>
+    </item>
+    <item>
+      <title>Format Packs</title>
+      <link>/fuego-docs/docs/concepts/format-packs/</link>
+    </item>
+    <item>
+      <title>Config Merging</title>
+      <link>/fuego-docs/docs/config-merging/</link>
+    </item>
+    <item>
+      <title>Configuration</title>
+      <link>/fuego-docs/docs/configuration/</link>
+    </item>
+    <item>
+      <title>Custom Parsers</title>
+      <link>/fuego-docs/docs/custom-parsers/</link>
+    </item>
+    <item>
+      <title>Getting Started</title>
+      <link>/fuego-docs/docs/getting-started/</link>
+    </item>
+    <item>
+      <title>Hooks</title>
+      <link>/fuego-docs/docs/hooks/</link>
+    </item>
+    <item>
+      <title>Add an RSS Feed and Sitemap</title>
+      <link>/fuego-docs/docs/how-to/add-feeds-and-sitemaps/</link>
+    </item>
+    <item>
+      <title>Add Taxonomies</title>
+      <link>/fuego-docs/docs/how-to/add-taxonomies/</link>
+    </item>
+    <item>
+      <title>Build a Navigation Menu</title>
+      <link>/fuego-docs/docs/how-to/build-a-nav-menu/</link>
+    </item>
+    <item>
+      <title>Deploy to GitHub Pages</title>
+      <link>/fuego-docs/docs/how-to/deploy-github-pages/</link>
+    </item>
+    <item>
+      <title>Paginate a Collection</title>
+      <link>/fuego-docs/docs/how-to/paginate-a-collection/</link>
+    </item>
+    <item>
+      <title>Templates</title>
+      <link>/fuego-docs/docs/templates/</link>
+    </item>
+    <item>
+      <title>Tutorial: Build a Format Pack</title>
+      <link>/fuego-docs/docs/tutorials/build-a-format-pack/</link>
+    </item>
+    <item>
+      <title>Tutorial: Build a Quiz Site</title>
+      <link>/fuego-docs/docs/tutorials/build-a-quiz-site/</link>
+    </item>
+    <item>
+      <title>Tutorial: Your First Compiled Parser</title>
+      <link>/fuego-docs/docs/tutorials/your-first-compiled-parser/</link>
+    </item>
+    <item>
+      <title>The meta-engine for static sites</title>
+      <link>/fuego-docs/index/</link>
+    </item>
+  </channel>
+</rss>
