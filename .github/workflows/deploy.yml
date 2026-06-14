@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     # Dual-hosted: fuego-pages (studio) + gh-pages (public GitHub Pages).
+    permissions:
+      contents: write
     uses: gofuego/.github/.github/workflows/fuego-deploy.yml@main
     with:
       studio_base: /gofuego/fuego-docs
