@@ -360,6 +360,17 @@
       "output_path": "index/index.html",
       "title": "The meta-engine for static sites",
       "envelope": {
+        "cta": [
+          {
+            "label": "Get started",
+            "url": "/docs/getting-started/"
+          },
+          {
+            "ghost": true,
+            "label": "Build a format pack",
+            "url": "/docs/tutorials/build-a-format-pack/"
+          }
+        ],
         "layout": "home",
         "title": "The meta-engine for static sites"
       }
