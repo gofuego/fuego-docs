@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/gofuego/fuego-docs/">
+    <title>Format Packs — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/" class="current">Format Packs</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Format Packs</h1>
+    <p>A format pack bundles everything a content format needs — parsers, hooks, and theme templates — into one registerable unit. Packs are plain Go modules: installing one is a <code>go get</code> plus one line of code.</p>
+<pre><code class="language-go">import &quot;github.com/example/fuego-pack-adr&quot;
+
+eng := engine.New()
+eng.Use(adr.Pack())
+</code></pre>
+<h2>What a pack contains</h2>
+<pre><code class="language-go">core.Pack{
+    Name:    &quot;adr&quot;,
+    Parsers: []core.Parser{adrParser},
+    Hooks:   core.Hooks{Index: []core.IndexHook{buildGraph}},
+    Theme:   themeFS, // embed.FS with base.html, layouts/, renderers/, partials/
+}
+</code></pre>
+<p>The <code>Theme</code> FS mirrors the user theme directory layout: an optional <code>base.html</code> at the root, plus <code>layouts/</code>, <code>renderers/</code>, and <code>partials/</code> subdirectories. A <code>static/</code> subdirectory is also supported — its files (CSS, JS, images) are copied to the output root during the STATIC phase, so a pack can ship a complete, self-contained theme. The user's <code>public/</code> directory is copied afterward, so user files win on conflict. Packs typically embed all of this:</p>
+<pre><code class="language-go">//go:embed theme
+var themeRoot embed.FS
+
+func Pack() core.Pack {
+    theme, _ := fs.Sub(themeRoot, &quot;theme&quot;)
+    return core.Pack{Name: &quot;adr&quot;, Theme: theme /* ... */}
+}
+</code></pre>
+<h2>Precedence</h2>
+<p>Conflicts resolve in one direction — toward whoever is closest to the site:</p>
+<table>
+<thead>
+<tr>
+<th>Conflict</th>
+<th>Winner</th>
+<th>Noise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User <code>theme/</code> file vs. pack template</td>
+<td>User file</td>
+<td>silent — that's the override gesture</td>
+</tr>
+<tr>
+<td>Later pack vs. earlier pack template</td>
+<td>Later pack</td>
+<td>warning logged</td>
+</tr>
+<tr>
+<td>User <code>Register()</code> parser vs. pack parser</td>
+<td>User parser, regardless of call order</td>
+<td>silent</td>
+</tr>
+<tr>
+<td>Later pack vs. earlier pack parser</td>
+<td>Later pack</td>
+<td>warning logged</td>
+</tr>
+<tr>
+<td>Pack parser vs. declarative config parser</td>
+<td>Pack parser</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>A site can run entirely on a pack's theme — <code>base.html</code> is required overall, but it may come from a pack instead of the user's theme directory.</p>
+<h2>Hooks</h2>
+<p>Pack hooks append to the engine's hook lists in registration order and run FIFO alongside user hooks. A pack that generates virtual pages (diagrams, indexes) should do so in an <code>Index</code> hook so its pages flow through collision detection.</p>
+<h2>Config and the Init lifecycle</h2>
+<p>A pack reads its settings from a namespaced <code>packs.{name}:</code> subtree of <code>config.yaml</code>:</p>
+<pre><code class="language-yaml">packs:
+  adr:
+    status_workflow: [proposed, accepted, superseded]
+    diagram: true
+</code></pre>
+<p>Give the pack an <code>Init</code> function to receive that subtree and act on it. <code>Init</code> runs once during the INIT phase — before content discovery — so it can register parsers and hooks conditionally:</p>
+<pre><code class="language-go">core.Pack{
+    Name: &quot;adr&quot;,
+    Init: func(ctx context.Context, pc *core.PackContext) error {
+        cfg := pc.Config() // map[string]any, the packs.adr subtree (nil if absent)
+
+        // Validate in Go — there is no schema language.
+        if _, ok := cfg[&quot;status_workflow&quot;]; !ok {
+            return fmt.Errorf(&quot;adr pack requires status_workflow&quot;)
+        }
+
+        // Register conditionally based on config.
+        if enabled, _ := cfg[&quot;diagram&quot;].(bool); enabled {
+            pc.Index(buildDiagramHook)
+        }
+        return nil
+    },
+}
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li><code>Init</code> is optional; packs without one are pure declarative bundles.</li>
+<li>An <code>Init</code> error halts the build as <code>pack &quot;{name}&quot;: &lt;your error&gt;</code>.</li>
+<li>A <code>packs.{name}:</code> subtree with no matching registered pack logs a warning naming the known packs — typos don't pass silently.</li>
+<li>Parsers and hooks registered in <code>Init</code> follow the same precedence as those declared on the <code>Pack</code> struct.</li>
+</ul>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

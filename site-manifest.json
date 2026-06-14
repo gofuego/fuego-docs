@@ -1,0 +1,698 @@
+{
+  "content_root": "content",
+  "pages": [
+    {
+      "url": "/docs/cli/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/cli.md",
+      "output_path": "docs/cli/index.html",
+      "title": "CLI Reference",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Reference",
+        "nav_weight": 2,
+        "tags": [
+          "reference",
+          "cli"
+        ],
+        "title": "CLI Reference"
+      }
+    },
+    {
+      "url": "/docs/concepts/build-pipeline/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/concepts/build-pipeline.md",
+      "output_path": "docs/concepts/build-pipeline/index.html",
+      "title": "The Build Pipeline",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Concepts",
+        "nav_weight": 2,
+        "tags": [
+          "concepts",
+          "architecture"
+        ],
+        "title": "The Build Pipeline"
+      }
+    },
+    {
+      "url": "/docs/concepts/embedding/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/concepts/embedding.md",
+      "output_path": "docs/concepts/embedding/index.html",
+      "title": "Embedding Fuego",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Concepts",
+        "nav_weight": 4,
+        "tags": [
+          "concepts",
+          "go",
+          "packs"
+        ],
+        "title": "Embedding Fuego"
+      }
+    },
+    {
+      "url": "/docs/concepts/format-agnostic/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/concepts/format-agnostic.md",
+      "output_path": "docs/concepts/format-agnostic/index.html",
+      "title": "Why Format-Agnostic?",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Concepts",
+        "nav_weight": 1,
+        "tags": [
+          "concepts",
+          "architecture"
+        ],
+        "title": "Why Format-Agnostic?"
+      }
+    },
+    {
+      "url": "/docs/concepts/format-packs/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/concepts/format-packs.md",
+      "output_path": "docs/concepts/format-packs/index.html",
+      "title": "Format Packs",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Concepts",
+        "nav_weight": 3,
+        "tags": [
+          "concepts",
+          "packs"
+        ],
+        "title": "Format Packs"
+      }
+    },
+    {
+      "url": "/docs/config-merging/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/config-merging.md",
+      "output_path": "docs/config-merging/index.html",
+      "title": "Config Merging",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Reference",
+        "nav_weight": 6,
+        "tags": [
+          "reference",
+          "config",
+          "packs"
+        ],
+        "title": "Config Merging"
+      }
+    },
+    {
+      "url": "/docs/configuration/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/configuration.md",
+      "output_path": "docs/configuration/index.html",
+      "title": "Configuration",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Reference",
+        "nav_weight": 1,
+        "tags": [
+          "reference",
+          "config"
+        ],
+        "title": "Configuration"
+      }
+    },
+    {
+      "url": "/docs/custom-parsers/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/custom-parsers.md",
+      "output_path": "docs/custom-parsers/index.html",
+      "title": "Custom Parsers",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Reference",
+        "nav_weight": 4,
+        "tags": [
+          "reference",
+          "parsers"
+        ],
+        "title": "Custom Parsers"
+      }
+    },
+    {
+      "url": "/docs/getting-started/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/getting-started.md",
+      "output_path": "docs/getting-started/index.html",
+      "title": "Getting Started",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Getting Started",
+        "nav_weight": 1,
+        "tags": [
+          "getting-started",
+          "tutorial"
+        ],
+        "title": "Getting Started"
+      }
+    },
+    {
+      "url": "/docs/hooks/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/hooks.md",
+      "output_path": "docs/hooks/index.html",
+      "title": "Hooks",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Reference",
+        "nav_weight": 5,
+        "tags": [
+          "reference",
+          "go"
+        ],
+        "title": "Hooks"
+      }
+    },
+    {
+      "url": "/docs/how-to/add-feeds-and-sitemaps/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/how-to/add-feeds-and-sitemaps.md",
+      "output_path": "docs/how-to/add-feeds-and-sitemaps/index.html",
+      "title": "Add an RSS Feed and Sitemap",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Guides",
+        "nav_weight": 4,
+        "tags": [
+          "how-to",
+          "templates"
+        ],
+        "title": "Add an RSS Feed and Sitemap"
+      }
+    },
+    {
+      "url": "/docs/how-to/add-taxonomies/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/how-to/add-taxonomies.md",
+      "output_path": "docs/how-to/add-taxonomies/index.html",
+      "title": "Add Taxonomies",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Guides",
+        "nav_weight": 1,
+        "tags": [
+          "how-to",
+          "config",
+          "taxonomies"
+        ],
+        "title": "Add Taxonomies"
+      }
+    },
+    {
+      "url": "/docs/how-to/build-a-nav-menu/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/how-to/build-a-nav-menu.md",
+      "output_path": "docs/how-to/build-a-nav-menu/index.html",
+      "title": "Build a Navigation Menu",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Guides",
+        "nav_weight": 2,
+        "tags": [
+          "how-to",
+          "templates"
+        ],
+        "title": "Build a Navigation Menu"
+      }
+    },
+    {
+      "url": "/docs/how-to/deploy-github-pages/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/how-to/deploy-github-pages.md",
+      "output_path": "docs/how-to/deploy-github-pages/index.html",
+      "title": "Deploy to GitHub Pages",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Guides",
+        "nav_weight": 5,
+        "tags": [
+          "how-to",
+          "deployment"
+        ],
+        "title": "Deploy to GitHub Pages"
+      }
+    },
+    {
+      "url": "/docs/how-to/paginate-a-collection/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/how-to/paginate-a-collection.md",
+      "output_path": "docs/how-to/paginate-a-collection/index.html",
+      "title": "Paginate a Collection",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Guides",
+        "nav_weight": 3,
+        "tags": [
+          "how-to",
+          "collections"
+        ],
+        "title": "Paginate a Collection"
+      }
+    },
+    {
+      "url": "/docs/templates/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/templates.md",
+      "output_path": "docs/templates/index.html",
+      "title": "Templates",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Reference",
+        "nav_weight": 3,
+        "tags": [
+          "reference",
+          "templates"
+        ],
+        "title": "Templates"
+      }
+    },
+    {
+      "url": "/docs/tutorials/build-a-format-pack/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/tutorials/build-a-format-pack.md",
+      "output_path": "docs/tutorials/build-a-format-pack/index.html",
+      "title": "Tutorial: Build a Format Pack",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Tutorials",
+        "nav_weight": 3,
+        "order": 3,
+        "tags": [
+          "tutorial",
+          "packs",
+          "go"
+        ],
+        "title": "Tutorial: Build a Format Pack"
+      }
+    },
+    {
+      "url": "/docs/tutorials/build-a-quiz-site/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/tutorials/build-a-quiz-site.md",
+      "output_path": "docs/tutorials/build-a-quiz-site/index.html",
+      "title": "Tutorial: Build a Quiz Site",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Tutorials",
+        "nav_weight": 1,
+        "order": 1,
+        "tags": [
+          "tutorial",
+          "parsers",
+          "templates"
+        ],
+        "title": "Tutorial: Build a Quiz Site"
+      }
+    },
+    {
+      "url": "/docs/tutorials/your-first-compiled-parser/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/tutorials/your-first-compiled-parser.md",
+      "output_path": "docs/tutorials/your-first-compiled-parser/index.html",
+      "title": "Tutorial: Your First Compiled Parser",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Tutorials",
+        "nav_weight": 2,
+        "order": 2,
+        "tags": [
+          "tutorial",
+          "parsers",
+          "go"
+        ],
+        "title": "Tutorial: Your First Compiled Parser"
+      }
+    },
+    {
+      "url": "/index/",
+      "type": "md",
+      "layout": "home",
+      "source_path": "index.md",
+      "output_path": "index/index.html",
+      "title": "The meta-engine for static sites",
+      "envelope": {
+        "layout": "home",
+        "title": "The meta-engine for static sites"
+      }
+    },
+    {
+      "url": "/tags/",
+      "type": "taxonomy-index",
+      "layout": "tag-index",
+      "source_path": "_virtual/taxonomy/tags/_index",
+      "output_path": "tags/index.html",
+      "title": "All Tags",
+      "envelope": {
+        "taxonomy": "tags",
+        "title": "All Tags"
+      }
+    },
+    {
+      "url": "/tags/architecture/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/architecture",
+      "output_path": "tags/architecture/index.html",
+      "title": "Tags: architecture",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "architecture",
+        "title": "Tags: architecture"
+      }
+    },
+    {
+      "url": "/tags/cli/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/cli",
+      "output_path": "tags/cli/index.html",
+      "title": "Tags: cli",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "cli",
+        "title": "Tags: cli"
+      }
+    },
+    {
+      "url": "/tags/collections/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/collections",
+      "output_path": "tags/collections/index.html",
+      "title": "Tags: collections",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "collections",
+        "title": "Tags: collections"
+      }
+    },
+    {
+      "url": "/tags/concepts/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/concepts",
+      "output_path": "tags/concepts/index.html",
+      "title": "Tags: concepts",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "concepts",
+        "title": "Tags: concepts"
+      }
+    },
+    {
+      "url": "/tags/config/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/config",
+      "output_path": "tags/config/index.html",
+      "title": "Tags: config",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "config",
+        "title": "Tags: config"
+      }
+    },
+    {
+      "url": "/tags/deployment/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/deployment",
+      "output_path": "tags/deployment/index.html",
+      "title": "Tags: deployment",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "deployment",
+        "title": "Tags: deployment"
+      }
+    },
+    {
+      "url": "/tags/getting-started/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/getting-started",
+      "output_path": "tags/getting-started/index.html",
+      "title": "Tags: getting-started",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "getting-started",
+        "title": "Tags: getting-started"
+      }
+    },
+    {
+      "url": "/tags/go/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/go",
+      "output_path": "tags/go/index.html",
+      "title": "Tags: go",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "go",
+        "title": "Tags: go"
+      }
+    },
+    {
+      "url": "/tags/how-to/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/how-to",
+      "output_path": "tags/how-to/index.html",
+      "title": "Tags: how-to",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "how-to",
+        "title": "Tags: how-to"
+      }
+    },
+    {
+      "url": "/tags/packs/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/packs",
+      "output_path": "tags/packs/index.html",
+      "title": "Tags: packs",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "packs",
+        "title": "Tags: packs"
+      }
+    },
+    {
+      "url": "/tags/parsers/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/parsers",
+      "output_path": "tags/parsers/index.html",
+      "title": "Tags: parsers",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "parsers",
+        "title": "Tags: parsers"
+      }
+    },
+    {
+      "url": "/tags/reference/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/reference",
+      "output_path": "tags/reference/index.html",
+      "title": "Tags: reference",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "reference",
+        "title": "Tags: reference"
+      }
+    },
+    {
+      "url": "/tags/taxonomies/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/taxonomies",
+      "output_path": "tags/taxonomies/index.html",
+      "title": "Tags: taxonomies",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "taxonomies",
+        "title": "Tags: taxonomies"
+      }
+    },
+    {
+      "url": "/tags/templates/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/templates",
+      "output_path": "tags/templates/index.html",
+      "title": "Tags: templates",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "templates",
+        "title": "Tags: templates"
+      }
+    },
+    {
+      "url": "/tags/tutorial/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/tutorial",
+      "output_path": "tags/tutorial/index.html",
+      "title": "Tags: tutorial",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "tutorial",
+        "title": "Tags: tutorial"
+      }
+    },
+    {
+      "url": "/tutorials/",
+      "type": "collection",
+      "layout": "listing",
+      "source_path": "_virtual/collection/tutorials",
+      "output_path": "tutorials/index.html",
+      "title": "Tutorials",
+      "envelope": {
+        "collection": "tutorials",
+        "title": "Tutorials"
+      }
+    },
+    {
+      "url": "/tutorials/page/2/",
+      "type": "collection",
+      "layout": "listing",
+      "source_path": "_virtual/collection/tutorials/page-2",
+      "output_path": "tutorials/page/2/index.html",
+      "title": "Tutorials",
+      "envelope": {
+        "collection": "tutorials",
+        "title": "Tutorials"
+      }
+    },
+    {
+      "url": "/tutorials/page/3/",
+      "type": "collection",
+      "layout": "listing",
+      "source_path": "_virtual/collection/tutorials/page-3",
+      "output_path": "tutorials/page/3/index.html",
+      "title": "Tutorials",
+      "envelope": {
+        "collection": "tutorials",
+        "title": "Tutorials"
+      }
+    }
+  ],
+  "taxonomies": {
+    "tags": {
+      "terms": {
+        "architecture": [
+          1,
+          3
+        ],
+        "cli": [
+          0
+        ],
+        "collections": [
+          14
+        ],
+        "concepts": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "config": [
+          5,
+          6,
+          11
+        ],
+        "deployment": [
+          13
+        ],
+        "getting-started": [
+          8
+        ],
+        "go": [
+          2,
+          9,
+          16,
+          18
+        ],
+        "how-to": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "packs": [
+          2,
+          4,
+          5,
+          16
+        ],
+        "parsers": [
+          7,
+          17,
+          18
+        ],
+        "reference": [
+          0,
+          5,
+          6,
+          7,
+          9,
+          15
+        ],
+        "taxonomies": [
+          11
+        ],
+        "templates": [
+          10,
+          12,
+          15,
+          17
+        ],
+        "tutorial": [
+          8,
+          16,
+          17,
+          18
+        ]
+      }
+    }
+  },
+  "collections": {
+    "tutorials": {
+      "pages": [
+        17
+      ]
+    }
+  }
+}

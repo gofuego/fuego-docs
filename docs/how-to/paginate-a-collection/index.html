@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/gofuego/fuego-docs/">
+    <title>Paginate a Collection — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/" class="current">Paginate a Collection</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Paginate a Collection</h1>
+    <p>Add <code>page_size</code> to any collection or taxonomy to split its listing into multiple pages.</p>
+<h2>Configuration</h2>
+<pre><code class="language-yaml">collections:
+  posts:
+    match: &quot;posts/**&quot;
+    sort_by: &quot;date&quot;
+    layout: &quot;listing&quot;
+    path: &quot;/blog&quot;
+    page_size: 10
+</code></pre>
+<p>With more entries than <code>page_size</code>, the listing splits into numbered pages:</p>
+<ul>
+<li>Page 1 stays at the configured path: <code>/blog/</code></li>
+<li>Subsequent pages live under <code>page/</code>: <code>/blog/page/2/</code>, <code>/blog/page/3/</code>, …</li>
+</ul>
+<p>The same applies to taxonomy <strong>term</strong> pages — set <code>page_size</code> under a taxonomy to paginate <code>/tags/{term}/</code>.</p>
+<h2>The paginator in templates</h2>
+<p>Each paginated page exposes <code>.Paginator</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.Paginator.CurrentPage</code></td>
+<td>1-based page number</td>
+</tr>
+<tr>
+<td><code>.Paginator.TotalPages</code></td>
+<td>Total number of pages</td>
+</tr>
+<tr>
+<td><code>.Paginator.PrevURL</code></td>
+<td>Previous page URL, empty on page 1</td>
+</tr>
+<tr>
+<td><code>.Paginator.NextURL</code></td>
+<td>Next page URL, empty on the last page</td>
+</tr>
+</tbody>
+</table>
+<p><code>.Paginator</code> is <code>nil</code> on unpaginated pages, so guard with <code>{{if .Paginator}}</code>:</p>
+<pre><code class="language-html">{{define &quot;content&quot;}}
+&lt;ol&gt;{{.Page.Content}}&lt;/ol&gt;
+
+{{- if .Paginator}}
+&lt;nav class=&quot;pagination&quot;&gt;
+    {{- if .Paginator.PrevURL}}&lt;a href=&quot;{{.Paginator.PrevURL}}&quot;&gt;← prev&lt;/a&gt;{{end}}
+    &lt;span&gt;page {{.Paginator.CurrentPage}} of {{.Paginator.TotalPages}}&lt;/span&gt;
+    {{- if .Paginator.NextURL}}&lt;a href=&quot;{{.Paginator.NextURL}}&quot;&gt;next →&lt;/a&gt;{{end}}
+&lt;/nav&gt;
+{{- end}}
+{{end}}
+</code></pre>
+<p>Entries are paginated in the collection's <code>sort_by</code> order, and the split is deterministic across builds.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

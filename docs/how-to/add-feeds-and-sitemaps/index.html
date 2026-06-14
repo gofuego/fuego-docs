@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/gofuego/fuego-docs/">
+    <title>Add an RSS Feed and Sitemap — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/" class="current">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Add an RSS Feed and Sitemap</h1>
+    <p>Fuego has no built-in feed or sitemap generator — and doesn't need one. Any file you place in <code>theme/outputs/</code> is rendered as a template and written to the build root, so RSS, sitemaps, <code>robots.txt</code>, search indexes, and redirect maps are all the same one mechanism.</p>
+<h2>How outputs work</h2>
+<p>Each file under <code>theme/outputs/</code> is executed as a <strong>text</strong> template (not HTML — so XML and JSON aren't corrupted by entity escaping) and written to the matching path in the output directory. Nested directories are preserved: <code>theme/outputs/feeds/news.xml</code> becomes <code>build/feeds/news.xml</code>.</p>
+<p>Output templates receive <code>.Site</code>, including <code>.Site.Pages</code> — the same URL-sorted page references available in HTML templates — plus the data-shaping functions <code>where</code>, <code>sortBy</code>, <code>limit</code>, <code>first</code>, <code>dict</code>, and <code>dateFormat</code>.</p>
+<h2>Sitemap</h2>
+<p><code>theme/outputs/sitemap.xml</code>:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;&gt;
+{{- range .Site.Pages}}
+  &lt;url&gt;&lt;loc&gt;{{$.Site.BaseURL}}{{.URL}}&lt;/loc&gt;&lt;/url&gt;
+{{- end}}
+&lt;/urlset&gt;
+</code></pre>
+<h2>RSS feed</h2>
+<p><code>theme/outputs/feed.xml</code> — filter to the page type you publish, and format dates from the envelope:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;rss version=&quot;2.0&quot;&gt;
+  &lt;channel&gt;
+    &lt;title&gt;{{.Site.Name}}&lt;/title&gt;
+    &lt;link&gt;{{.Site.BaseURL}}&lt;/link&gt;
+    {{- range where .Site.Pages &quot;type&quot; &quot;post&quot;}}
+    &lt;item&gt;
+      &lt;title&gt;{{.Envelope.title}}&lt;/title&gt;
+      &lt;link&gt;{{$.Site.BaseURL}}{{.URL}}&lt;/link&gt;
+      {{- if .Envelope.date}}
+      &lt;pubDate&gt;{{dateFormat &quot;Mon, 02 Jan 2006 15:04:05 -0700&quot; .Envelope.date}}&lt;/pubDate&gt;
+      {{- end}}
+    &lt;/item&gt;
+    {{- end}}
+  &lt;/channel&gt;
+&lt;/rss&gt;
+</code></pre>
+<h2>robots.txt</h2>
+<p><code>theme/outputs/robots.txt</code>:</p>
+<pre><code>User-agent: *
+Allow: /
+Sitemap: {{.Site.BaseURL}}/sitemap.xml
+</code></pre>
+<h2>Notes</h2>
+<ul>
+<li>An output file that would overwrite a page's HTML (e.g. <code>outputs/about/index.html</code> when an <code>/about/</code> page exists) fails the build with a collision error.</li>
+<li>Outputs are not listed in <code>site-manifest.json</code> — the manifest indexes pages, not generated assets.</li>
+<li>A pack can ship outputs too; your <code>theme/outputs/</code> files override a pack's by the same name.</li>
+</ul>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

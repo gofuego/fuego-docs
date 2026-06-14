@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/gofuego/fuego-docs/">
+    <title>Config Merging — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/config-merging/" class="current">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Config Merging</h1>
+    <p>When you register <a href="/docs/concepts/format-packs/">format packs</a>, each pack may contribute config defaults — routes, taxonomies, collections, declarative parsers. Fuego deep-merges those defaults beneath your <code>config.yaml</code> so installing a pack &quot;just works&quot;, while your config always has the final say.</p>
+<h2>Precedence</h2>
+<p>From lowest to highest:</p>
+<ol>
+<li>Earlier-registered pack defaults</li>
+<li>Later-registered pack defaults</li>
+<li><strong>Your <code>config.yaml</code></strong> — always wins</li>
+</ol>
+<h2>Merge rules</h2>
+<p>The merge operates key by key on the YAML structure:</p>
+<table>
+<thead>
+<tr>
+<th>Value kind</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maps</strong></td>
+<td>Merged recursively, key by key</td>
+</tr>
+<tr>
+<td><strong>Scalars</strong></td>
+<td>Replaced whole by the higher-precedence layer</td>
+</tr>
+<tr>
+<td><strong>Lists</strong></td>
+<td>Replaced whole — never appended or element-merged</td>
+</tr>
+</tbody>
+</table>
+<p>The list rule is deliberate and worth internalizing: if a pack ships a list (say, a parser's <code>rules:</code>) and you define the same list, <strong>your list replaces it entirely</strong> — the two are not concatenated. This keeps merges predictable and lets you remove pack entries, at the cost of having to restate a list you want to extend.</p>
+<h3>Example</h3>
+<p>A pack contributes:</p>
+<pre><code class="language-yaml">routes:
+  adr: /adr/{slug}
+taxonomies:
+  status:
+    path: /status/{term}
+</code></pre>
+<p>Your <code>config.yaml</code>:</p>
+<pre><code class="language-yaml">routes:
+  adr: /decisions/{slug}
+</code></pre>
+<p>Resolved result: <code>routes.adr</code> is <code>/decisions/{slug}</code> (yours), and <code>taxonomies.status</code> is inherited from the pack. <code>routes</code> is a map, so the two <code>routes</code> blocks merge; <code>adr</code> is a scalar, so yours replaces the pack's.</p>
+<h2>Inspecting the result</h2>
+<p>Deep merges can make &quot;why is this value what it is?&quot; hard to answer. The <code>fuego config</code> command prints the fully resolved configuration with a provenance comment on every key:</p>
+<pre><code class="language-console">$ fuego config
+routes:
+  adr: /decisions/{slug}   # user
+taxonomies:
+  status:                  # pack: adr
+    path: /status/{term}   # pack: adr
+</code></pre>
+<p>Output is deterministic (keys sorted), so it is safe to diff across changes.</p>
+<h2>Validation</h2>
+<p>Config validation runs <strong>after</strong> the merge, on the resolved result. If a pack contributes an invalid entry — a malformed parser regex, a negative <code>page_size</code> — the error names the contributing pack:</p>
+<pre><code>parser &quot;broken&quot; rule 0: invalid regex &quot;[&quot; (from pack &quot;adr&quot;): ...
+</code></pre>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

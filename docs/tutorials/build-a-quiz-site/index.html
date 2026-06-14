@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/gofuego/fuego-docs/">
+    <title>Tutorial: Build a Quiz Site — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="index/" class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/" class="current">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Tutorial: Build a Quiz Site</h1>
+    <p>In this tutorial you'll build a trivia quiz site from scratch using a custom <code>.trivia</code> format. No Go code needed — everything is defined in <code>config.yaml</code>.</p>
+<h2>1. Scaffold the Project</h2>
+<pre><code class="language-bash">go run github.com/gofuego/fuego/cmd/fuego@latest init quiz-site
+cd quiz-site
+</code></pre>
+<h2>2. Define the Trivia Format</h2>
+<p>Open <code>config.yaml</code> and replace the <code>parsers</code> section:</p>
+<pre><code class="language-yaml">parsers:
+  trivia:
+    rules:
+      - match: '^\?\s*(.+)$'
+        emit:
+          type: question
+          content: &quot;$1&quot;
+      - match: '^\[([A-Z])\]\s+(.+)$'
+        emit:
+          type: answer
+          content: &quot;$2&quot;
+          attributes:
+            letter: &quot;$1&quot;
+      - match: '^&gt;\s*(.+)$'
+        emit:
+          type: hint
+          content: &quot;$1&quot;
+</code></pre>
+<p>This defines three rules. Each line of a <code>.trivia</code> file is tested against the rules in order — first match wins. Capture groups (<code>$1</code>, <code>$2</code>) fill in the content and attributes.</p>
+<h2>3. Write a Trivia File</h2>
+<p>Create <code>content/history.trivia</code>:</p>
+<pre><code>---
+title: History Quiz
+tags:
+  - history
+---
+? When was the Declaration of Independence signed?
+[A] 1776
+[B] 1789
+[C] 1804
+&gt; Think American Revolution
+
+? Who was the first Roman Emperor?
+[A] Julius Caesar
+[B] Augustus
+[C] Nero
+&gt; Not the one who was assassinated
+</code></pre>
+<h2>4. Add a Renderer Template</h2>
+<p>The parser produces <code>question</code>, <code>answer</code>, and <code>hint</code> nodes. Without custom renderers, they render as generic <code>&lt;div data-type=&quot;...&quot;&gt;</code> wrappers. Let's style them.</p>
+<p>Create <code>theme/renderers/question.html</code>:</p>
+<pre><code class="language-html">&lt;div class=&quot;question&quot;&gt;{{.Content}}&lt;/div&gt;
+</code></pre>
+<p>Create <code>theme/renderers/answer.html</code>:</p>
+<pre><code class="language-html">&lt;div class=&quot;answer&quot;&gt;&lt;span class=&quot;letter&quot;&gt;{{index .Attributes &quot;letter&quot;}}&lt;/span&gt; {{.Content}}&lt;/div&gt;
+</code></pre>
+<p>Create <code>theme/renderers/hint.html</code>:</p>
+<pre><code class="language-html">&lt;details class=&quot;hint&quot;&gt;&lt;summary&gt;Hint&lt;/summary&gt;{{.Content}}&lt;/details&gt;
+</code></pre>
+<h2>5. Add Some CSS</h2>
+<p>Add to <code>public/style.css</code>:</p>
+<pre><code class="language-css">.question { font-size: 1.2rem; font-weight: 600; margin: 1.5rem 0 .5rem; }
+.answer { padding: .25rem 0; }
+.letter { display: inline-block; width: 1.5rem; font-weight: 700; color: #e94560; }
+.hint { margin: .5rem 0 1rem; color: #888; }
+</code></pre>
+<h2>6. Build and Preview</h2>
+<pre><code class="language-bash">go run . serve
+</code></pre>
+<p>Open <code>http://localhost:8080/history/</code> — you'll see your trivia questions rendered with styled answers and collapsible hints.</p>
+<h2>What Just Happened?</h2>
+<p>You defined a content format entirely in YAML. No Go code, no plugins, no build scripts. The pipeline:</p>
+<ol>
+<li><strong>DISCOVER</strong> found <code>history.trivia</code> in <code>content/</code></li>
+<li><strong>PARSE</strong> matched it to the <code>trivia</code> declarative parser, ran each line through the regex rules, and produced <code>question</code>, <code>answer</code>, and <code>hint</code> nodes</li>
+<li><strong>ROUTE</strong> used the filesystem mirror to assign the URL <code>/history/</code></li>
+<li><strong>RENDER</strong> found your renderer templates and used them instead of the default <code>&lt;div&gt;</code> wrappers</li>
+</ol>
+<h2>Next Steps</h2>
+<ul>
+<li>Add route patterns: <code>routes: { trivia: &quot;/quiz/{slug}&quot; }</code> → changes the URL to <code>/quiz/history/</code></li>
+<li>Add taxonomies on the <code>tags</code> field to auto-generate tag pages</li>
+<li>Add more trivia files and use a collection to build a quiz index page</li>
+</ul>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>
