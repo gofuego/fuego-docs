@@ -21,12 +21,18 @@ eng.Use(adr.Pack())
 
 ```go
 core.Pack{
-    Name:    "adr",
-    Parsers: []core.Parser{adrParser},
-    Hooks:   core.Hooks{Index: []core.IndexHook{buildGraph}},
-    Theme:   themeFS, // embed.FS with base.html, layouts/, renderers/, partials/
+    Name:           "adr",
+    Parsers:        []core.Parser{adrParser},
+    Hooks:          core.Hooks{Index: []core.IndexHook{buildGraph}},
+    Theme:          themeFS,      // embed.FS with base.html, layouts/, renderers/, partials/, static/
+    ConfigDefaults: defaultsYAML, // YAML fragment deep-merged under the user's config
+    // Init:        func(ctx, *core.PackContext) error { … }  // optional lifecycle (see below)
 }
 ```
+
+`ConfigDefaults` is a YAML byte slice (routes, taxonomies, collections,
+declarative parsers) that's deep-merged *beneath* the user's `config.yaml`, so a
+pack ships sensible defaults the user can override — see [Config Merging](docs/config-merging/).
 
 The `Theme` FS mirrors the user theme directory layout: an optional `base.html` at the root, plus `layouts/`, `renderers/`, and `partials/` subdirectories. A `static/` subdirectory is also supported — its files (CSS, JS, images) are copied to the output root during the STATIC phase, so a pack can ship a complete, self-contained theme. The user's `public/` directory is copied afterward, so user files win on conflict. Packs typically embed all of this:
 

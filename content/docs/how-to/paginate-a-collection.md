@@ -48,9 +48,9 @@ Each paginated page exposes `.Paginator`:
 
 {{- if .Paginator}}
 <nav class="pagination">
-    {{- if .Paginator.PrevURL}}<a href="{{.Paginator.PrevURL}}">← prev</a>{{end}}
+    {{- if .Paginator.PrevURL}}<a href="{{.Site.BaseURL}}{{.Paginator.PrevURL}}">← prev</a>{{end}}
     <span>page {{.Paginator.CurrentPage}} of {{.Paginator.TotalPages}}</span>
-    {{- if .Paginator.NextURL}}<a href="{{.Paginator.NextURL}}">next →</a>{{end}}
+    {{- if .Paginator.NextURL}}<a href="{{.Site.BaseURL}}{{.Paginator.NextURL}}">next →</a>{{end}}
 </nav>
 {{- end}}
 {{end}}

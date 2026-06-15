@@ -69,6 +69,7 @@ without rendering and returns the page count — a CI gate.
 | `SiteName` / `BaseURL` | Site metadata |
 | `DevPort` / `DevCommand` / `ProxyPort` | Dev-server settings (`Serve`) |
 | `Incremental` / `CacheDir` | Reuse cached parses for unchanged content |
+| `CheckLinks` / `StrictLinks` | Check internal links after building; fail on a broken one (`StrictLinks` implies `CheckLinks`) |
 
 ### Configuration resolution
 

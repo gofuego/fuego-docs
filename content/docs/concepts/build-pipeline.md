@@ -67,7 +67,8 @@ Assigns a URL to each page using three-tier priority:
 
 1. Frontmatter `slug` field — overrides the slug segment
 2. Config `routes[type]` pattern — pattern expansion with `{dir}`, `{slug}`, `{filename}`
-3. Filesystem mirror — the default
+3. Filesystem mirror — the default. An `index` file routes to its directory's
+   root: `content/index.md` → `/`, `content/blog/index.md` → `/blog/`.
 
 After resolution, checks for URL collisions. A collision is a `GlobalFatal` error that stops the build.
 

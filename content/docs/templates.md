@@ -99,6 +99,35 @@ Key resolution for `where` and `sortBy`: map keys for maps, exported struct fiel
 | `.Paginator` | On paginated listing pages: `.CurrentPage`, `.TotalPages`, `.PrevURL`, `.NextURL` (nil otherwise) — see [Paginate a Collection](docs/how-to/paginate-a-collection/) |
 | `.JSON` | Full page data as JSON (computed only if the template references it) |
 
+## Linking
+
+Fuego does **not** rewrite links to account for the site's `base_url`, so links
+must be base-aware or they break when the site is deployed under a subpath (e.g.
+`/owner/repo` on GitHub Pages). Page URLs (`.URL`, `.Paginator.PrevURL`, a ref's
+`.URL`) are root-relative (they start with `/`), so in a template you **prefix
+them with the base**:
+
+```html
+<a href="{{.Site.BaseURL}}{{.URL}}">{{.Envelope.title}}</a>   <!-- ✓ -->
+<a href="{{.URL}}">…</a>                                       <!-- ✗ escapes the base -->
+```
+
+Inside a `range`, `.` is the element, so reach the site root with `$`:
+`{{$.Site.BaseURL}}{{.URL}}`. The same applies to assets:
+`href="{{.Site.BaseURL}}/style.css"`.
+
+In **content** (Markdown and other formats), where you can't call `.Site.BaseURL`,
+use **base-relative** links — no leading slash:
+
+```md
+[Guide](docs/guide/)     <!-- ✓ resolves against <base href> = the site root -->
+[Guide](/docs/guide/)    <!-- ✗ absolute path; escapes the deploy subpath -->
+```
+
+This works because `theme/base.html` should set `<base href="{{.Site.BaseURL}}/">`,
+against which a no-leading-slash link resolves from the site root under any
+`base_url`. Catch violations with [`build --strict-links`](docs/cli/#build).
+
 ## JSON Embed
 
 Embedding `{{.JSON}}` in your base template or a layout gives the page its full data (envelope, parsed nodes, URL) as JSON, typically inside `<script type="application/json" id="fuego-data">`. This enables client-side interactivity without a separate API.

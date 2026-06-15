@@ -25,28 +25,21 @@ site:
 
 GitHub Pages serves your site at `https://username.github.io/my-repo/`, so all links and asset paths need this prefix.
 
-## 2. Use BaseURL in Templates
+## 2. Make Links Base-Aware
 
-Make sure your `theme/base.html` uses `{{.Site.BaseURL}}` for all links:
+Under a subpath, links must include the base URL or they break. In templates,
+prefix page URLs with `{{.Site.BaseURL}}`; in content, use base-relative links
+(no leading slash). See [Linking](docs/templates/#linking).
 
 ```html
 <link rel="stylesheet" href="{{.Site.BaseURL}}/style.css">
-<a href="{{.Site.BaseURL}}/index/">Home</a>
+<a href="{{.Site.BaseURL}}/">Home</a>
 ```
 
-## 3. Add a Root Redirect
+`content/index.md` routes to `/`, so there's a real `index.html` at the site
+root — no redirect file is needed.
 
-The engine generates pages at `/{slug}/index.html`, so there's no `index.html` at the root. Add `public/index.html` to redirect:
-
-```html
-<!DOCTYPE html>
-<html>
-<head><meta http-equiv="refresh" content="0;url=index/"></head>
-<body></body>
-</html>
-```
-
-## 4. Create the Workflow
+## 3. Create the Workflow
 
 Create `.github/workflows/docs.yml`:
 
@@ -73,8 +66,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
-      - run: go run . build
+          go-version: "1.25"
+      - run: go run . build --strict-links   # fail the deploy on a broken internal link
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build
@@ -90,7 +83,7 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-## 5. Enable GitHub Pages
+## 4. Enable GitHub Pages
 
 Go to your repository's Settings > Pages and set the source to **"GitHub Actions"**.
 

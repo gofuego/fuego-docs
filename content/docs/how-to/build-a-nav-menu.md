@@ -31,7 +31,7 @@ Create `theme/partials/nav.html`:
 <nav>
     <ul>
     {{- range sortBy (where .Site.Pages "type" "doc") "weight"}}
-        <li><a href="{{.URL}}">{{.Envelope.title}}</a></li>
+        <li><a href="{{$.Site.BaseURL}}{{.URL}}">{{.Envelope.title}}</a></li>
     {{- end}}
     </ul>
 </nav>
@@ -53,13 +53,15 @@ weight: 1
 
 `where` filters by map key, struct field (case-insensitive), or envelope key — `"type"` matches the ref's `Type`, `"weight"` matches `Envelope["weight"]`. `sortBy` sorts numbers numerically and copies before sorting, so the shared ref slice is never mutated.
 
+Note the link: `{{$.Site.BaseURL}}{{.URL}}`. A ref's `.URL` is root-relative (it starts with `/`), so it must be prefixed with the base URL or it escapes the deploy subpath — see [Linking](docs/templates/#linking). Inside `range`, `$` reaches the template root that holds `.Site`.
+
 ## Listing taxonomy terms
 
 Virtual pages appear in the refs like any other page, so a tag cloud is a filter away:
 
 ```html
 {{range .Site.Pages}}{{if eq .Type "taxonomy-term"}}
-    <a href="{{.URL}}">{{.Envelope.title}}</a>
+    <a href="{{$.Site.BaseURL}}{{.URL}}">{{.Envelope.title}}</a>
 {{end}}{{end}}
 ```
 
@@ -70,6 +72,6 @@ Inside a page template, query against the current page's envelope:
 ```html
 {{$current := .Page}}
 {{range where .Site.Pages "category" $current.Envelope.category | limit 5}}
-    {{if ne .URL $current.URL}}<a href="{{.URL}}">{{.Envelope.title}}</a>{{end}}
+    {{if ne .URL $current.URL}}<a href="{{$.Site.BaseURL}}{{.URL}}">{{.Envelope.title}}</a>{{end}}
 {{end}}
 ```

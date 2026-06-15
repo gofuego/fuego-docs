@@ -10,7 +10,7 @@ tags:
 
 ## Install
 
-Fuego requires Go 1.23 or later.
+Fuego requires Go 1.25 or later.
 
 ```bash
 go install github.com/gofuego/fuego/cmd/fuego@latest
@@ -52,8 +52,10 @@ mysite/
     outputs/         # sitemap.xml + rss.xml (non-HTML outputs)
   public/
     style.css        # starter stylesheet
-    index.html       # root redirect
 ```
+
+`content/index.md` is the homepage: an `index` file routes to its directory's
+root, so it becomes `/` (and `content/blog/index.md` would become `/blog/`).
 
 ### Start from a format pack
 
@@ -120,4 +122,14 @@ Set `base_url` in `config.yaml` to your deploy path:
 - **Root domain** — `base_url: ""`
 - **GitHub Pages subpath** — `base_url: "/my-repo"`
 
-Use `{{.Site.BaseURL}}` in your templates as a prefix for all links and asset references.
+Because a site can deploy under a subpath, **internal links must be
+base-aware** — Fuego does not rewrite them for you:
+
+- **In templates**, prefix page URLs with the base: `{{.Site.BaseURL}}{{.URL}}`.
+- **In content** (Markdown, etc.), use **base-relative** links — no leading
+  slash: `[Guide](docs/guide/)`, not `[Guide](/docs/guide/)`. The theme's
+  `<base href="{{.Site.BaseURL}}/">` resolves them from the site root.
+
+A leading-slash link like `/docs/guide/` is absolute and **escapes the deploy
+subpath** (it points at the domain root). Run [`build --strict-links`](docs/cli/#build)
+to catch any that slip through. See [Linking](docs/templates/#linking) for the full rule.

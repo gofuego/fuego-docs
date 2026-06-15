@@ -15,7 +15,7 @@ All configuration lives in `config.yaml` at the project root.
 ```yaml
 site:
   name: "My Site"
-  base_url: "https://example.com"
+  base_url: ""          # root deploy; use "/my-repo" for a subpath (e.g. GitHub Pages)
 ```
 
 ## Routes
