@@ -34,7 +34,7 @@ fuego build --incremental         # reuse cached parses for unchanged content
 fuego build --base-url /owner/repo  # override the deploy subpath without editing config
 ```
 
-With `--incremental`, Fuego keeps a build cache and re-parses only the content files whose bytes changed since the last build; deleted pages have their output removed. A change to the engine binary, the resolved config, or the theme invalidates the cache and triggers a full, clean rebuild — so incremental output is always identical to a clean build. The dev server (`serve`) uses incremental builds automatically. See [The Build Pipeline](/docs/concepts/build-pipeline/#incremental-builds).
+With `--incremental`, Fuego keeps a build cache and re-parses only the content files whose bytes changed since the last build; deleted pages have their output removed. A change to the engine binary, the resolved config, or the theme invalidates the cache and triggers a full, clean rebuild — so incremental output is always identical to a clean build. The dev server (`serve`) uses incremental builds automatically. See [The Build Pipeline](docs/concepts/build-pipeline/#incremental-builds).
 
 `--base-url` overrides the site's `base_url` (the deploy subpath, e.g. `/owner/repo`) for that build, so a deploy workflow can set it per-target without a separate config file; pass an empty value (`--base-url ""`) to build for the root. It's also available on `serve`.
 
@@ -74,7 +74,7 @@ Print the fully resolved configuration — your `config.yaml` deep-merged with e
 fuego config
 ```
 
-Useful for answering "why is this value what it is?" when format packs contribute config defaults. Output is deterministic, so it is safe to diff. See [Config Merging](/docs/config-merging/).
+Useful for answering "why is this value what it is?" when format packs contribute config defaults. Output is deterministic, so it is safe to diff. See [Config Merging](docs/config-merging/).
 
 ### init
 

@@ -3,10 +3,10 @@ github.com/bmatcuk/doublestar/v4 v4.10.0/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fT
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
 github.com/fsnotify/fsnotify v1.10.1 h1:b0/UzAf9yR5rhf3RPm9gf3ehBPpf0oZKIjtpKrx59Ho=
 github.com/fsnotify/fsnotify v1.10.1/go.mod h1:TLheqan6HD6GBK6PrDWyDPBaEV8LspOxvPSjC+bVfgo=
-github.com/gofuego/fuego v0.3.4 h1:GCAtOFRZkbWvfwrWC5vkWU1j+ZVNBjHOcnHbEOxGjqI=
-github.com/gofuego/fuego v0.3.4/go.mod h1:m7SObZKwzDqCnymRYHhm07HWGWjSEOstCeZ/v4I/qF8=
-github.com/gofuego/fuego-doctheme v0.1.0 h1:LB2yZKTbQyfJBsAJte90RXCj7FpZIf+tn82STPetkq4=
-github.com/gofuego/fuego-doctheme v0.1.0/go.mod h1:oCgTCqEwg8Or82lV7jatKGy9Q4XXIvB8tz30CewWafk=
+github.com/gofuego/fuego v0.4.2 h1:femfh0a5oHT9MgiVJBpfg0pvWgqhXjoBLi0JXDf+Hh8=
+github.com/gofuego/fuego v0.4.2/go.mod h1:m7SObZKwzDqCnymRYHhm07HWGWjSEOstCeZ/v4I/qF8=
+github.com/gofuego/fuego-doctheme v0.2.0 h1:qm56BRSk2FmiHFbhJO6rA/UMGUhdSPdszgQxlNqPtUU=
+github.com/gofuego/fuego-doctheme v0.2.0/go.mod h1:oCgTCqEwg8Or82lV7jatKGy9Q4XXIvB8tz30CewWafk=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=

@@ -57,7 +57,7 @@ mysite/
 
 ### Start from a format pack
 
-If a [format pack](/docs/concepts/format-packs/) already provides the content
+If a [format pack](docs/concepts/format-packs/) already provides the content
 type you want — Markdown ADRs, Kubernetes diagrams, flashcards — scaffold with
 it pre-installed:
 
@@ -67,7 +67,7 @@ fuego init mysite --pack github.com/gofuego/fuego-adr/adr
 
 This wires `eng.Use(adr.Pack())` into `main.go` and runs `go get` to install
 it. Add the pack's content under `content/` and `go run . build`. See the
-[CLI reference](/docs/cli/#init) for `--pack-symbol`.
+[CLI reference](docs/cli/#init) for `--pack-symbol`.
 
 ## Build
 

@@ -94,7 +94,7 @@ Pages marked `Skip` by a hook are excluded from RENDER and the manifest.
 
 ### OUTPUTS
 
-Renders every file under `theme/outputs/` as a text template fed with `.Site`, writing non-HTML site assets — RSS feeds, sitemaps, `robots.txt`, search indexes — to matching output paths. See [Add an RSS Feed and Sitemap](/docs/how-to/add-feeds-and-sitemaps/).
+Renders every file under `theme/outputs/` as a text template fed with `.Site`, writing non-HTML site assets — RSS feeds, sitemaps, `robots.txt`, search indexes — to matching output paths. See [Add an RSS Feed and Sitemap](docs/how-to/add-feeds-and-sitemaps/).
 
 ### MANIFEST
 

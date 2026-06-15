@@ -9,7 +9,7 @@ tags:
   - packs
 ---
 
-When you register [format packs](/docs/concepts/format-packs/), each pack may contribute config defaults — routes, taxonomies, collections, declarative parsers. Fuego deep-merges those defaults beneath your `config.yaml` so installing a pack "just works", while your config always has the final say.
+When you register [format packs](docs/concepts/format-packs/), each pack may contribute config defaults — routes, taxonomies, collections, declarative parsers. Fuego deep-merges those defaults beneath your `config.yaml` so installing a pack "just works", while your config always has the final say.
 
 ## Precedence
 

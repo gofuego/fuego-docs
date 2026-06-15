@@ -11,7 +11,7 @@ tags:
 
 Fuego isn't only a CLI — it's a library for **building your own static site
 generator**. A domain-specific tool (an ADR site builder, an infra-diagram
-generator, a changelog publisher) is typically a [format pack](/docs/concepts/format-packs/)
+generator, a changelog publisher) is typically a [format pack](docs/concepts/format-packs/)
 plus a thin program that drives the engine in-process. [fuego-adr](https://github.com/gofuego/fuego-adr)
 is exactly this shape.
 
@@ -80,7 +80,7 @@ The effective config is layered, lowest precedence first:
 
 So a pack contributes routes and taxonomies, an optional file adds project
 config, and your tool sets the dirs and site metadata on top — all deep-merged
-([Config Merging](/docs/config-merging/)).
+([Config Merging](docs/config-merging/)).
 
 ## Building a tool
 
@@ -93,4 +93,4 @@ The recommended shape, as used by fuego-adr:
 
 Users then get both: your branded CLI, and the ability to drop your pack into
 any Fuego project with one line. See the
-[Build a Format Pack](/docs/tutorials/build-a-format-pack/) tutorial.
+[Build a Format Pack](docs/tutorials/build-a-format-pack/) tutorial.

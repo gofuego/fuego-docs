@@ -153,4 +153,4 @@ defaults to the module path's last segment; if yours differs, consumers pass
 - Precedence always favors the user: user parsers, user theme files, and user config win over the pack.
 - Consumers install it with one line — `eng.Use(...)` — or scaffold with `fuego init --pack`.
 
-See [Format Packs](/docs/concepts/format-packs/) for the full reference and [Config Merging](/docs/config-merging/) for the merge rules.
+See [Format Packs](docs/concepts/format-packs/) for the full reference and [Config Merging](docs/config-merging/) for the merge rules.

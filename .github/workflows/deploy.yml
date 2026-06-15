@@ -14,3 +14,4 @@ jobs:
     with:
       studio_base: /gofuego/fuego-docs
       pages_base: /fuego-docs
+      check_links: true
