@@ -5,6 +5,10 @@
     <link>/fuego-docs</link>
     <description>Documentation for the Fuego static site engine.</description>
     <item>
+      <title>The meta-engine for static sites</title>
+      <link>/fuego-docs/</link>
+    </item>
+    <item>
       <title>CLI Reference</title>
       <link>/fuego-docs/docs/cli/</link>
     </item>
@@ -79,10 +83,6 @@
     <item>
       <title>Tutorial: Your First Compiled Parser</title>
       <link>/fuego-docs/docs/tutorials/your-first-compiled-parser/</link>
-    </item>
-    <item>
-      <title>The meta-engine for static sites</title>
-      <link>/fuego-docs/index/</link>
     </item>
   </channel>
 </rss>

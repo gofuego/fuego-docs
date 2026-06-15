@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>/fuego-docs/</loc></url>
   <url><loc>/fuego-docs/docs/cli/</loc></url>
   <url><loc>/fuego-docs/docs/concepts/build-pipeline/</loc></url>
   <url><loc>/fuego-docs/docs/concepts/embedding/</loc></url>
@@ -19,7 +20,6 @@
   <url><loc>/fuego-docs/docs/tutorials/build-a-format-pack/</loc></url>
   <url><loc>/fuego-docs/docs/tutorials/build-a-quiz-site/</loc></url>
   <url><loc>/fuego-docs/docs/tutorials/your-first-compiled-parser/</loc></url>
-  <url><loc>/fuego-docs/index/</loc></url>
   <url><loc>/fuego-docs/tags/</loc></url>
   <url><loc>/fuego-docs/tags/architecture/</loc></url>
   <url><loc>/fuego-docs/tags/cli/</loc></url>
