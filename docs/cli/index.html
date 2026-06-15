@@ -48,6 +48,7 @@
             <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -80,7 +81,7 @@
     <h2>Install</h2>
 <pre><code class="language-bash">go install github.com/gofuego/fuego/cmd/fuego@latest
 </code></pre>
-<p>Requires Go 1.23+. The binary is placed in <code>$GOPATH/bin</code> (usually <code>~/go/bin</code>). Ensure this directory is in your <code>PATH</code>.</p>
+<p>Requires Go 1.25+. The binary is placed in <code>$GOPATH/bin</code> (usually <code>~/go/bin</code>). Ensure this directory is in your <code>PATH</code>.</p>
 <p>Alternatively, run any command without installing:</p>
 <pre><code class="language-bash">go run github.com/gofuego/fuego/cmd/fuego@latest &lt;command&gt;
 </code></pre>
@@ -88,11 +89,14 @@
 <h3>build</h3>
 <p>Build the static site. Runs the full pipeline and writes output to <code>build/</code>.</p>
 <pre><code class="language-bash">fuego build
-fuego build --incremental         # reuse cached parses for unchanged content
-fuego build --base-url /owner/repo  # override the deploy subpath without editing config
+fuego build --incremental            # reuse cached parses for unchanged content
+fuego build --base-url /owner/repo   # override the deploy subpath without editing config
+fuego build --check-links            # report internal links that don't resolve
+fuego build --strict-links           # fail the build on a broken internal link
 </code></pre>
 <p>With <code>--incremental</code>, Fuego keeps a build cache and re-parses only the content files whose bytes changed since the last build; deleted pages have their output removed. A change to the engine binary, the resolved config, or the theme invalidates the cache and triggers a full, clean rebuild — so incremental output is always identical to a clean build. The dev server (<code>serve</code>) uses incremental builds automatically. See <a href="docs/concepts/build-pipeline/#incremental-builds">The Build Pipeline</a>.</p>
 <p><code>--base-url</code> overrides the site's <code>base_url</code> (the deploy subpath, e.g. <code>/owner/repo</code>) for that build, so a deploy workflow can set it per-target without a separate config file; pass an empty value (<code>--base-url &quot;&quot;</code>) to build for the root. It's also available on <code>serve</code>.</p>
+<p><code>--check-links</code> resolves every internal <code>&lt;a href&gt;</code> against the page's <code>&lt;base href&gt;</code> and the site base URL, and reports links that don't land on a generated page; <code>--strict-links</code> makes such a link fail the build (for CI). Run it with <code>--base-url</code> set to the real deploy path so it catches links that escape the deployment base. See <a href="docs/how-to/check-for-broken-links/">Check for Broken Links</a>.</p>
 <h3>serve</h3>
 <p>Start a dev server with file watching and live rebuild.</p>
 <pre><code class="language-bash">fuego serve
@@ -102,7 +106,7 @@ fuego build --base-url /owner/repo  # override the deploy subpath without editin
 <p>Check config and content for errors without producing output. Useful as a CI gate.</p>
 <pre><code class="language-bash">fuego validate
 </code></pre>
-<p>Runs the pipeline through INDEX (discovery, parsing, routing, collision detection) without rendering. Exit code 0 on success, 1 on any error.</p>
+<p>Runs the pipeline through INDEX (discovery, parsing, routing, collision detection) without rendering. Exit code 0 on success, 1 on any error. Because it doesn't render, <code>validate</code> can't check links — use <code>build --strict-links</code> for that.</p>
 <h3>list</h3>
 <p>Print all pages as a table of TYPE, SOURCE, and URL.</p>
 <pre><code class="language-bash">fuego list
@@ -140,6 +144,11 @@ downloads it — so installing a pack can't execute third-party code.</p>
 <td><code>--config</code></td>
 <td><code>config.yaml</code></td>
 <td>Path to configuration file</td>
+</tr>
+<tr>
+<td><code>--version</code></td>
+<td></td>
+<td>Print the version and exit (reports the installed module version)</td>
 </tr>
 </tbody>
 </table>

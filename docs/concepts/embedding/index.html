@@ -48,6 +48,7 @@
             <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -148,6 +149,10 @@ without rendering and returns the page count — a CI gate.</p>
 <tr>
 <td><code>Incremental</code> / <code>CacheDir</code></td>
 <td>Reuse cached parses for unchanged content</td>
+</tr>
+<tr>
+<td><code>CheckLinks</code> / <code>StrictLinks</code></td>
+<td>Check internal links after building; fail on a broken one (<code>StrictLinks</code> implies <code>CheckLinks</code>)</td>
 </tr>
 </tbody>
 </table>

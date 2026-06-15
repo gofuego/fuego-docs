@@ -48,6 +48,7 @@
             <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -81,7 +82,7 @@
 <h2>Site</h2>
 <pre><code class="language-yaml">site:
   name: &quot;My Site&quot;
-  base_url: &quot;https://example.com&quot;
+  base_url: &quot;&quot;          # root deploy; use &quot;/my-repo&quot; for a subpath (e.g. GitHub Pages)
 </code></pre>
 <h2>Routes</h2>
 <p>Three-tier URL resolution: frontmatter <code>slug</code> &gt; config route pattern &gt; filesystem mirror.</p>
