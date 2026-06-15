@@ -11,7 +11,7 @@
 <body>
 <header>
     <nav>
-        <a href="index/" class="logo">Fuego</a>
+        <a href="." class="logo">Fuego</a>
         <ul>
             <li><a href="docs/getting-started/">Get Started</a></li>
             <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
@@ -79,7 +79,7 @@
     <h1>Embedding Fuego</h1>
     <p>Fuego isn't only a CLI — it's a library for <strong>building your own static site
 generator</strong>. A domain-specific tool (an ADR site builder, an infra-diagram
-generator, a changelog publisher) is typically a <a href="/docs/concepts/format-packs/">format pack</a>
+generator, a changelog publisher) is typically a <a href="docs/concepts/format-packs/">format pack</a>
 plus a thin program that drives the engine in-process. <a href="https://github.com/gofuego/fuego-adr">fuego-adr</a>
 is exactly this shape.</p>
 <h2>Two ways to drive the engine</h2>
@@ -160,7 +160,7 @@ without rendering and returns the page count — a CI gate.</p>
 </ol>
 <p>So a pack contributes routes and taxonomies, an optional file adds project
 config, and your tool sets the dirs and site metadata on top — all deep-merged
-(<a href="/docs/config-merging/">Config Merging</a>).</p>
+(<a href="docs/config-merging/">Config Merging</a>).</p>
 <h2>Building a tool</h2>
 <p>The recommended shape, as used by fuego-adr:</p>
 <ol>
@@ -171,7 +171,7 @@ config, and your tool sets the dirs and site metadata on top — all deep-merged
 </ol>
 <p>Users then get both: your branded CLI, and the ability to drop your pack into
 any Fuego project with one line. See the
-<a href="/docs/tutorials/build-a-format-pack/">Build a Format Pack</a> tutorial.</p>
+<a href="docs/tutorials/build-a-format-pack/">Build a Format Pack</a> tutorial.</p>
 
 </article>
 

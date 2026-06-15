@@ -2,6 +2,29 @@
   "content_root": "content",
   "pages": [
     {
+      "url": "/",
+      "type": "md",
+      "layout": "home",
+      "source_path": "index.md",
+      "output_path": "index.html",
+      "title": "The meta-engine for static sites",
+      "envelope": {
+        "cta": [
+          {
+            "label": "Get started",
+            "url": "/docs/getting-started/"
+          },
+          {
+            "ghost": true,
+            "label": "Build a format pack",
+            "url": "/docs/tutorials/build-a-format-pack/"
+          }
+        ],
+        "layout": "home",
+        "title": "The meta-engine for static sites"
+      }
+    },
+    {
       "url": "/docs/cli/",
       "type": "md",
       "layout": "doc",
@@ -353,29 +376,6 @@
       }
     },
     {
-      "url": "/index/",
-      "type": "md",
-      "layout": "home",
-      "source_path": "index.md",
-      "output_path": "index/index.html",
-      "title": "The meta-engine for static sites",
-      "envelope": {
-        "cta": [
-          {
-            "label": "Get started",
-            "url": "/docs/getting-started/"
-          },
-          {
-            "ghost": true,
-            "label": "Build a format pack",
-            "url": "/docs/tutorials/build-a-format-pack/"
-          }
-        ],
-        "layout": "home",
-        "title": "The meta-engine for static sites"
-      }
-    },
-    {
       "url": "/tags/",
       "type": "taxonomy-index",
       "layout": "tag-index",
@@ -623,78 +623,78 @@
     "tags": {
       "terms": {
         "architecture": [
-          1,
-          3
-        ],
-        "cli": [
-          0
-        ],
-        "collections": [
-          14
-        ],
-        "concepts": [
-          1,
           2,
-          3,
           4
         ],
+        "cli": [
+          1
+        ],
+        "collections": [
+          15
+        ],
+        "concepts": [
+          2,
+          3,
+          4,
+          5
+        ],
         "config": [
-          5,
           6,
-          11
+          7,
+          12
         ],
         "deployment": [
-          13
+          14
         ],
         "getting-started": [
-          8
+          9
         ],
         "go": [
-          2,
-          9,
-          16,
-          18
+          3,
+          10,
+          17,
+          19
         ],
         "how-to": [
-          10,
           11,
           12,
           13,
-          14
-        ],
-        "packs": [
-          2,
-          4,
-          5,
-          16
-        ],
-        "parsers": [
-          7,
-          17,
-          18
-        ],
-        "reference": [
-          0,
-          5,
-          6,
-          7,
-          9,
+          14,
           15
         ],
-        "taxonomies": [
-          11
-        ],
-        "templates": [
-          10,
-          12,
-          15,
+        "packs": [
+          3,
+          5,
+          6,
           17
         ],
-        "tutorial": [
+        "parsers": [
           8,
+          18,
+          19
+        ],
+        "reference": [
+          1,
+          6,
+          7,
+          8,
+          10,
+          16
+        ],
+        "taxonomies": [
+          12
+        ],
+        "templates": [
+          11,
+          13,
           16,
-          17,
           18
+        ],
+        "tutorial": [
+          9,
+          17,
+          18,
+          19
         ]
       }
     }
@@ -702,7 +702,7 @@
   "collections": {
     "tutorials": {
       "pages": [
-        17
+        18
       ]
     }
   }

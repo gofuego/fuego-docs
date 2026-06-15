@@ -11,7 +11,7 @@
 <body>
 <header>
     <nav>
-        <a href="index/" class="logo">Fuego</a>
+        <a href="." class="logo">Fuego</a>
         <ul>
             <li><a href="docs/getting-started/">Get Started</a></li>
             <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
@@ -144,7 +144,7 @@ STATIC         →  copy public/ and colocated assets
 </ol>
 <p>Pages marked <code>Skip</code> by a hook are excluded from RENDER and the manifest.</p>
 <h3>OUTPUTS</h3>
-<p>Renders every file under <code>theme/outputs/</code> as a text template fed with <code>.Site</code>, writing non-HTML site assets — RSS feeds, sitemaps, <code>robots.txt</code>, search indexes — to matching output paths. See <a href="/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a>.</p>
+<p>Renders every file under <code>theme/outputs/</code> as a text template fed with <code>.Site</code>, writing non-HTML site assets — RSS feeds, sitemaps, <code>robots.txt</code>, search indexes — to matching output paths. See <a href="docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a>.</p>
 <h3>MANIFEST</h3>
 <p>Writes <code>site-manifest.json</code> — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its <code>url</code>, <code>type</code>, <code>layout</code>, <code>title</code>, <code>output_path</code> (the generated file, e.g. <code>blog/post/index.html</code>), and <code>source_path</code> (the source file relative to the content directory — empty for virtual pages); the top-level <code>content_root</code> is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.</p>
 <h3>STATIC</h3>

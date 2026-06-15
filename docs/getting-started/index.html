@@ -11,7 +11,7 @@
 <body>
 <header>
     <nav>
-        <a href="index/" class="logo">Fuego</a>
+        <a href="." class="logo">Fuego</a>
         <ul>
             <li><a href="docs/getting-started/">Get Started</a></li>
             <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
@@ -109,14 +109,14 @@
     index.html       # root redirect
 </code></pre>
 <h3>Start from a format pack</h3>
-<p>If a <a href="/docs/concepts/format-packs/">format pack</a> already provides the content
+<p>If a <a href="docs/concepts/format-packs/">format pack</a> already provides the content
 type you want — Markdown ADRs, Kubernetes diagrams, flashcards — scaffold with
 it pre-installed:</p>
 <pre><code class="language-bash">fuego init mysite --pack github.com/gofuego/fuego-adr/adr
 </code></pre>
 <p>This wires <code>eng.Use(adr.Pack())</code> into <code>main.go</code> and runs <code>go get</code> to install
 it. Add the pack's content under <code>content/</code> and <code>go run . build</code>. See the
-<a href="/docs/cli/#init">CLI reference</a> for <code>--pack-symbol</code>.</p>
+<a href="docs/cli/#init">CLI reference</a> for <code>--pack-symbol</code>.</p>
 <h2>Build</h2>
 <pre><code class="language-bash">cd mysite
 fuego build
