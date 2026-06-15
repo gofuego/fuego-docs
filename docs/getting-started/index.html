@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -78,7 +79,7 @@
 <article class="doc">
     <h1>Getting Started</h1>
     <h2>Install</h2>
-<p>Fuego requires Go 1.23 or later.</p>
+<p>Fuego requires Go 1.25 or later.</p>
 <pre><code class="language-bash">go install github.com/gofuego/fuego/cmd/fuego@latest
 </code></pre>
 <p>This adds the <code>fuego</code> binary to your <code>$GOPATH/bin</code> (usually <code>~/go/bin</code>). Make sure it's in your PATH:</p>
@@ -106,8 +107,9 @@
     outputs/         # sitemap.xml + rss.xml (non-HTML outputs)
   public/
     style.css        # starter stylesheet
-    index.html       # root redirect
 </code></pre>
+<p><code>content/index.md</code> is the homepage: an <code>index</code> file routes to its directory's
+root, so it becomes <code>/</code> (and <code>content/blog/index.md</code> would become <code>/blog/</code>).</p>
 <h3>Start from a format pack</h3>
 <p>If a <a href="docs/concepts/format-packs/">format pack</a> already provides the content
 type you want — Markdown ADRs, Kubernetes diagrams, flashcards — scaffold with
@@ -153,7 +155,17 @@ Your content here, in whatever format the parser expects.
 <li><strong>Root domain</strong> — <code>base_url: &quot;&quot;</code></li>
 <li><strong>GitHub Pages subpath</strong> — <code>base_url: &quot;/my-repo&quot;</code></li>
 </ul>
-<p>Use <code>{{.Site.BaseURL}}</code> in your templates as a prefix for all links and asset references.</p>
+<p>Because a site can deploy under a subpath, <strong>internal links must be
+base-aware</strong> — Fuego does not rewrite them for you:</p>
+<ul>
+<li><strong>In templates</strong>, prefix page URLs with the base: <code>{{.Site.BaseURL}}{{.URL}}</code>.</li>
+<li><strong>In content</strong> (Markdown, etc.), use <strong>base-relative</strong> links — no leading
+slash: <code>[Guide](docs/guide/)</code>, not <code>[Guide](/docs/guide/)</code>. The theme's
+<code>&lt;base href=&quot;{{.Site.BaseURL}}/&quot;&gt;</code> resolves them from the site root.</li>
+</ul>
+<p>A leading-slash link like <code>/docs/guide/</code> is absolute and <strong>escapes the deploy
+subpath</strong> (it points at the domain root). Run <a href="docs/cli/#build"><code>build --strict-links</code></a>
+to catch any that slip through. See <a href="docs/templates/#linking">Linking</a> for the full rule.</p>
 
 </article>
 

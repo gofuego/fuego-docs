@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -85,12 +86,17 @@ eng.Use(adr.Pack())
 </code></pre>
 <h2>What a pack contains</h2>
 <pre><code class="language-go">core.Pack{
-    Name:    &quot;adr&quot;,
-    Parsers: []core.Parser{adrParser},
-    Hooks:   core.Hooks{Index: []core.IndexHook{buildGraph}},
-    Theme:   themeFS, // embed.FS with base.html, layouts/, renderers/, partials/
+    Name:           &quot;adr&quot;,
+    Parsers:        []core.Parser{adrParser},
+    Hooks:          core.Hooks{Index: []core.IndexHook{buildGraph}},
+    Theme:          themeFS,      // embed.FS with base.html, layouts/, renderers/, partials/, static/
+    ConfigDefaults: defaultsYAML, // YAML fragment deep-merged under the user's config
+    // Init:        func(ctx, *core.PackContext) error { … }  // optional lifecycle (see below)
 }
 </code></pre>
+<p><code>ConfigDefaults</code> is a YAML byte slice (routes, taxonomies, collections,
+declarative parsers) that's deep-merged <em>beneath</em> the user's <code>config.yaml</code>, so a
+pack ships sensible defaults the user can override — see <a href="docs/config-merging/">Config Merging</a>.</p>
 <p>The <code>Theme</code> FS mirrors the user theme directory layout: an optional <code>base.html</code> at the root, plus <code>layouts/</code>, <code>renderers/</code>, and <code>partials/</code> subdirectories. A <code>static/</code> subdirectory is also supported — its files (CSS, JS, images) are copied to the output root during the STATIC phase, so a pack can ship a complete, self-contained theme. The user's <code>public/</code> directory is copied afterward, so user files win on conflict. Packs typically embed all of this:</p>
 <pre><code class="language-go">//go:embed theme
 var themeRoot embed.FS

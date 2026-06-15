@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -225,6 +226,26 @@
 </tr>
 </tbody>
 </table>
+<h2>Linking</h2>
+<p>Fuego does <strong>not</strong> rewrite links to account for the site's <code>base_url</code>, so links
+must be base-aware or they break when the site is deployed under a subpath (e.g.
+<code>/owner/repo</code> on GitHub Pages). Page URLs (<code>.URL</code>, <code>.Paginator.PrevURL</code>, a ref's
+<code>.URL</code>) are root-relative (they start with <code>/</code>), so in a template you <strong>prefix
+them with the base</strong>:</p>
+<pre><code class="language-html">&lt;a href=&quot;{{.Site.BaseURL}}{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;   &lt;!-- ✓ --&gt;
+&lt;a href=&quot;{{.URL}}&quot;&gt;…&lt;/a&gt;                                       &lt;!-- ✗ escapes the base --&gt;
+</code></pre>
+<p>Inside a <code>range</code>, <code>.</code> is the element, so reach the site root with <code>$</code>:
+<code>{{$.Site.BaseURL}}{{.URL}}</code>. The same applies to assets:
+<code>href=&quot;{{.Site.BaseURL}}/style.css&quot;</code>.</p>
+<p>In <strong>content</strong> (Markdown and other formats), where you can't call <code>.Site.BaseURL</code>,
+use <strong>base-relative</strong> links — no leading slash:</p>
+<pre><code class="language-md">[Guide](docs/guide/)     &lt;!-- ✓ resolves against &lt;base href&gt; = the site root --&gt;
+[Guide](/docs/guide/)    &lt;!-- ✗ absolute path; escapes the deploy subpath --&gt;
+</code></pre>
+<p>This works because <code>theme/base.html</code> should set <code>&lt;base href=&quot;{{.Site.BaseURL}}/&quot;&gt;</code>,
+against which a no-leading-slash link resolves from the site root under any
+<code>base_url</code>. Catch violations with <a href="docs/cli/#build"><code>build --strict-links</code></a>.</p>
 <h2>JSON Embed</h2>
 <p>Embedding <code>{{.JSON}}</code> in your base template or a layout gives the page its full data (envelope, parsed nodes, URL) as JSON, typically inside <code>&lt;script type=&quot;application/json&quot; id=&quot;fuego-data&quot;&gt;</code>. This enables client-side interactivity without a separate API.</p>
 <p>The payload is computed only for pages whose template actually references <code>.JSON</code> — Fuego inspects templates at load time, so sites that never hydrate pay no serialization cost. There is no configuration for this; using <code>.JSON</code> anywhere in a template (including inside <code>if</code>/<code>range</code> blocks or via <code>$.JSON</code>) enables it for pages rendered with that template.</p>

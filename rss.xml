@@ -61,6 +61,10 @@
       <link>/fuego-docs/docs/how-to/build-a-nav-menu/</link>
     </item>
     <item>
+      <title>Check for Broken Links</title>
+      <link>/fuego-docs/docs/how-to/check-for-broken-links/</link>
+    </item>
+    <item>
       <title>Deploy to GitHub Pages</title>
       <link>/fuego-docs/docs/how-to/deploy-github-pages/</link>
     </item>

@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -112,7 +113,7 @@
 <pre><code class="language-html">&lt;nav&gt;
     &lt;ul&gt;
     {{- range sortBy (where .Site.Pages &quot;type&quot; &quot;doc&quot;) &quot;weight&quot;}}
-        &lt;li&gt;&lt;a href=&quot;{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;{{$.Site.BaseURL}}{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;&lt;/li&gt;
     {{- end}}
     &lt;/ul&gt;
 &lt;/nav&gt;
@@ -126,17 +127,18 @@ type: doc
 weight: 1
 </code></pre>
 <p><code>where</code> filters by map key, struct field (case-insensitive), or envelope key — <code>&quot;type&quot;</code> matches the ref's <code>Type</code>, <code>&quot;weight&quot;</code> matches <code>Envelope[&quot;weight&quot;]</code>. <code>sortBy</code> sorts numbers numerically and copies before sorting, so the shared ref slice is never mutated.</p>
+<p>Note the link: <code>{{$.Site.BaseURL}}{{.URL}}</code>. A ref's <code>.URL</code> is root-relative (it starts with <code>/</code>), so it must be prefixed with the base URL or it escapes the deploy subpath — see <a href="docs/templates/#linking">Linking</a>. Inside <code>range</code>, <code>$</code> reaches the template root that holds <code>.Site</code>.</p>
 <h2>Listing taxonomy terms</h2>
 <p>Virtual pages appear in the refs like any other page, so a tag cloud is a filter away:</p>
 <pre><code class="language-html">{{range .Site.Pages}}{{if eq .Type &quot;taxonomy-term&quot;}}
-    &lt;a href=&quot;{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;
+    &lt;a href=&quot;{{$.Site.BaseURL}}{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;
 {{end}}{{end}}
 </code></pre>
 <h2>Related pages</h2>
 <p>Inside a page template, query against the current page's envelope:</p>
 <pre><code class="language-html">{{$current := .Page}}
 {{range where .Site.Pages &quot;category&quot; $current.Envelope.category | limit 5}}
-    {{if ne .URL $current.URL}}&lt;a href=&quot;{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;{{end}}
+    {{if ne .URL $current.URL}}&lt;a href=&quot;{{$.Site.BaseURL}}{{.URL}}&quot;&gt;{{.Envelope.title}}&lt;/a&gt;{{end}}
 {{end}}
 </code></pre>
 

@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/" class="current">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -127,9 +128,9 @@
 
 {{- if .Paginator}}
 &lt;nav class=&quot;pagination&quot;&gt;
-    {{- if .Paginator.PrevURL}}&lt;a href=&quot;{{.Paginator.PrevURL}}&quot;&gt;← prev&lt;/a&gt;{{end}}
+    {{- if .Paginator.PrevURL}}&lt;a href=&quot;{{.Site.BaseURL}}{{.Paginator.PrevURL}}&quot;&gt;← prev&lt;/a&gt;{{end}}
     &lt;span&gt;page {{.Paginator.CurrentPage}} of {{.Paginator.TotalPages}}&lt;/span&gt;
-    {{- if .Paginator.NextURL}}&lt;a href=&quot;{{.Paginator.NextURL}}&quot;&gt;next →&lt;/a&gt;{{end}}
+    {{- if .Paginator.NextURL}}&lt;a href=&quot;{{.Site.BaseURL}}{{.Paginator.NextURL}}&quot;&gt;next →&lt;/a&gt;{{end}}
 &lt;/nav&gt;
 {{- end}}
 {{end}}

@@ -14,6 +14,7 @@
   <url><loc>/fuego-docs/docs/how-to/add-feeds-and-sitemaps/</loc></url>
   <url><loc>/fuego-docs/docs/how-to/add-taxonomies/</loc></url>
   <url><loc>/fuego-docs/docs/how-to/build-a-nav-menu/</loc></url>
+  <url><loc>/fuego-docs/docs/how-to/check-for-broken-links/</loc></url>
   <url><loc>/fuego-docs/docs/how-to/deploy-github-pages/</loc></url>
   <url><loc>/fuego-docs/docs/how-to/paginate-a-collection/</loc></url>
   <url><loc>/fuego-docs/docs/templates/</loc></url>
@@ -22,6 +23,7 @@
   <url><loc>/fuego-docs/docs/tutorials/your-first-compiled-parser/</loc></url>
   <url><loc>/fuego-docs/tags/</loc></url>
   <url><loc>/fuego-docs/tags/architecture/</loc></url>
+  <url><loc>/fuego-docs/tags/ci/</loc></url>
   <url><loc>/fuego-docs/tags/cli/</loc></url>
   <url><loc>/fuego-docs/tags/collections/</loc></url>
   <url><loc>/fuego-docs/tags/concepts/</loc></url>
@@ -30,6 +32,7 @@
   <url><loc>/fuego-docs/tags/getting-started/</loc></url>
   <url><loc>/fuego-docs/tags/go/</loc></url>
   <url><loc>/fuego-docs/tags/how-to/</loc></url>
+  <url><loc>/fuego-docs/tags/links/</loc></url>
   <url><loc>/fuego-docs/tags/packs/</loc></url>
   <url><loc>/fuego-docs/tags/parsers/</loc></url>
   <url><loc>/fuego-docs/tags/reference/</loc></url>

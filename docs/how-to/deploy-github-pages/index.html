@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/" class="current">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -89,20 +90,16 @@
   base_url: &quot;/my-repo&quot;
 </code></pre>
 <p>GitHub Pages serves your site at <code>https://username.github.io/my-repo/</code>, so all links and asset paths need this prefix.</p>
-<h2>2. Use BaseURL in Templates</h2>
-<p>Make sure your <code>theme/base.html</code> uses <code>{{.Site.BaseURL}}</code> for all links:</p>
+<h2>2. Make Links Base-Aware</h2>
+<p>Under a subpath, links must include the base URL or they break. In templates,
+prefix page URLs with <code>{{.Site.BaseURL}}</code>; in content, use base-relative links
+(no leading slash). See <a href="docs/templates/#linking">Linking</a>.</p>
 <pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;{{.Site.BaseURL}}/style.css&quot;&gt;
-&lt;a href=&quot;{{.Site.BaseURL}}/index/&quot;&gt;Home&lt;/a&gt;
+&lt;a href=&quot;{{.Site.BaseURL}}/&quot;&gt;Home&lt;/a&gt;
 </code></pre>
-<h2>3. Add a Root Redirect</h2>
-<p>The engine generates pages at <code>/{slug}/index.html</code>, so there's no <code>index.html</code> at the root. Add <code>public/index.html</code> to redirect:</p>
-<pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0;url=index/&quot;&gt;&lt;/head&gt;
-&lt;body&gt;&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<h2>4. Create the Workflow</h2>
+<p><code>content/index.md</code> routes to <code>/</code>, so there's a real <code>index.html</code> at the site
+root — no redirect file is needed.</p>
+<h2>3. Create the Workflow</h2>
 <p>Create <code>.github/workflows/docs.yml</code>:</p>
 <pre><code class="language-yaml">name: Deploy Site
 
@@ -126,8 +123,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: &quot;1.23&quot;
-      - run: go run . build
+          go-version: &quot;1.25&quot;
+      - run: go run . build --strict-links   # fail the deploy on a broken internal link
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build
@@ -142,7 +139,7 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
 </code></pre>
-<h2>5. Enable GitHub Pages</h2>
+<h2>4. Enable GitHub Pages</h2>
 <p>Go to your repository's Settings &gt; Pages and set the source to <strong>&quot;GitHub Actions&quot;</strong>.</p>
 <p>Push to <code>main</code> and the workflow will build and deploy your site automatically.</p>
 

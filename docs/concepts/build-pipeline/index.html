@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -123,7 +124,8 @@ STATIC         →  copy public/ and colocated assets
 <ol>
 <li>Frontmatter <code>slug</code> field — overrides the slug segment</li>
 <li>Config <code>routes[type]</code> pattern — pattern expansion with <code>{dir}</code>, <code>{slug}</code>, <code>{filename}</code></li>
-<li>Filesystem mirror — the default</li>
+<li>Filesystem mirror — the default. An <code>index</code> file routes to its directory's
+root: <code>content/index.md</code> → <code>/</code>, <code>content/blog/index.md</code> → <code>/blog/</code>.</li>
 </ol>
 <p>After resolution, checks for URL collisions. A collision is a <code>GlobalFatal</code> error that stops the build.</p>
 <h3>INDEX</h3>

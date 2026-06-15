@@ -262,6 +262,25 @@
       }
     },
     {
+      "url": "/docs/how-to/check-for-broken-links/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/how-to/check-for-broken-links.md",
+      "output_path": "docs/how-to/check-for-broken-links/index.html",
+      "title": "Check for Broken Links",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Guides",
+        "nav_weight": 6,
+        "tags": [
+          "how-to",
+          "links",
+          "ci"
+        ],
+        "title": "Check for Broken Links"
+      }
+    },
+    {
       "url": "/docs/how-to/deploy-github-pages/",
       "type": "md",
       "layout": "doc",
@@ -401,6 +420,19 @@
       }
     },
     {
+      "url": "/tags/ci/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/ci",
+      "output_path": "tags/ci/index.html",
+      "title": "Tags: ci",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "ci",
+        "title": "Tags: ci"
+      }
+    },
+    {
       "url": "/tags/cli/",
       "type": "taxonomy-term",
       "layout": "tag",
@@ -502,6 +534,19 @@
         "taxonomy": "tags",
         "term": "how-to",
         "title": "Tags: how-to"
+      }
+    },
+    {
+      "url": "/tags/links/",
+      "type": "taxonomy-term",
+      "layout": "tag",
+      "source_path": "_virtual/taxonomy/tags/links",
+      "output_path": "tags/links/index.html",
+      "title": "Tags: links",
+      "envelope": {
+        "taxonomy": "tags",
+        "term": "links",
+        "title": "Tags: links"
       }
     },
     {
@@ -626,11 +671,14 @@
           2,
           4
         ],
+        "ci": [
+          14
+        ],
         "cli": [
           1
         ],
         "collections": [
-          15
+          16
         ],
         "concepts": [
           2,
@@ -644,7 +692,7 @@
           12
         ],
         "deployment": [
-          14
+          15
         ],
         "getting-started": [
           9
@@ -652,26 +700,30 @@
         "go": [
           3,
           10,
-          17,
-          19
+          18,
+          20
         ],
         "how-to": [
           11,
           12,
           13,
           14,
-          15
+          15,
+          16
+        ],
+        "links": [
+          14
         ],
         "packs": [
           3,
           5,
           6,
-          17
+          18
         ],
         "parsers": [
           8,
-          18,
-          19
+          19,
+          20
         ],
         "reference": [
           1,
@@ -679,7 +731,7 @@
           7,
           8,
           10,
-          16
+          17
         ],
         "taxonomies": [
           12
@@ -687,14 +739,14 @@
         "templates": [
           11,
           13,
-          16,
-          18
+          17,
+          19
         ],
         "tutorial": [
           9,
-          17,
           18,
-          19
+          19,
+          20
         ]
       }
     }
@@ -702,7 +754,7 @@
   "collections": {
     "tutorials": {
       "pages": [
-        18
+        19
       ]
     }
   }
