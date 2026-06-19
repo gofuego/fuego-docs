@@ -2,7 +2,7 @@
 title: Check for Broken Links
 layout: doc
 nav_section: "Guides"
-nav_weight: 6
+nav_weight: 7
 tags:
   - how-to
   - links
