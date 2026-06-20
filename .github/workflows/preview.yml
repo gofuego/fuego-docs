@@ -1,0 +1,20 @@
+name: Preview (studio)
+
+# develop → fuego-pages: the editable site fuego-studio serves and commits edits
+# back to. Rebuilt on every develop push so the studio preview reflects edits.
+# Link-checking is intentionally lenient here — an in-progress edit must never
+# block the preview. The public, read-only site is built from main in deploy.yml;
+# "publishing" is merging develop → main.
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  preview:
+    permissions:
+      contents: write
+    uses: gofuego/.github/.github/workflows/fuego-deploy.yml@main
+    with:
+      studio_base: /gofuego/fuego-docs
