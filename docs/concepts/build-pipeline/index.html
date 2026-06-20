@@ -48,6 +48,7 @@
             <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
             <li><a href="/gofuego/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
@@ -148,7 +149,7 @@ root: <code>content/index.md</code> → <code>/</code>, <code>content/blog/index
 <h3>OUTPUTS</h3>
 <p>Renders every file under <code>theme/outputs/</code> as a text template fed with <code>.Site</code>, writing non-HTML site assets — RSS feeds, sitemaps, <code>robots.txt</code>, search indexes — to matching output paths. See <a href="docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a>.</p>
 <h3>MANIFEST</h3>
-<p>Writes <code>site-manifest.json</code> — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its <code>url</code>, <code>type</code>, <code>layout</code>, <code>title</code>, <code>output_path</code> (the generated file, e.g. <code>blog/post/index.html</code>), and <code>source_path</code> (the source file relative to the content directory — empty for virtual pages); the top-level <code>content_root</code> is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.</p>
+<p>Writes <code>site-manifest.json</code> — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its <code>url</code>, <code>type</code>, <code>layout</code>, <code>title</code>, <code>summary</code>, <code>output_path</code> (the generated file, e.g. <code>blog/post/index.html</code>), <code>source_path</code> (the source file relative to the content directory — <em>omitted</em> for virtual pages, which are non-editable), and the flattened <code>envelope</code>; the top-level <code>content_root</code> is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.</p>
 <h3>STATIC</h3>
 <p>Copies static assets to the output root, in precedence order: each registered pack's <code>static/</code> subtree first, then the user's <code>public/</code> directory (so user files win on conflict), then content-colocated binary assets at their routed paths.</p>
 <h2>Partial Execution</h2>

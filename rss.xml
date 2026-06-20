@@ -69,6 +69,10 @@
       <link>/gofuego/fuego-docs/docs/how-to/deploy-github-pages/</link>
     </item>
     <item>
+      <title>Deploy with Reusable Workflows</title>
+      <link>/gofuego/fuego-docs/docs/how-to/deploy-with-reusable-workflows/</link>
+    </item>
+    <item>
       <title>Paginate a Collection</title>
       <link>/gofuego/fuego-docs/docs/how-to/paginate-a-collection/</link>
     </item>

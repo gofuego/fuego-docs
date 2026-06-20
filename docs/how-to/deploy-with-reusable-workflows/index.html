@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/gofuego/fuego-docs/">
+    <title>Deploy with Reusable Workflows — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="." class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-with-reusable-workflows/" class="current">Deploy with Reusable Workflows</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Deploy with Reusable Workflows</h1>
+    <p>Instead of hand-rolling a deploy pipeline (see <a href="docs/how-to/deploy-github-pages/">Deploy to GitHub
+Pages</a>), the <strong>gofuego</strong> org publishes
+<strong>reusable GitHub Actions workflows</strong> that build and publish a Fuego site for you.
+A caller workflow is a few lines: you say <em>which base URL</em> and <em>where to publish</em>,
+the reusable workflow does the rest. They live in the public
+<a href="https://github.com/gofuego/.github"><code>gofuego/.github</code></a> repo — reference them
+directly, or fork them into your own org and pin to a tag.</p>
+<h2>The model</h2>
+<p><code>fuego-deploy</code> builds your site with a <code>--base-url</code> and pushes the generated
+<code>build/</code> output to a <strong>serve branch</strong>:</p>
+<ul>
+<li><code>pages_base</code> → built for GitHub Pages, pushed to <strong><code>gh-pages</code></strong></li>
+<li><code>studio_base</code> → built for the <a href="https://github.com/gofuego/fuego-studio">fuego-studio</a>
+mount path, pushed to <strong><code>fuego-pages</code></strong></li>
+</ul>
+<p>Pass either or both — one workflow covers a Pages-only site, a studio-only site,
+or a dual-hosted one.</p>
+<blockquote>
+<p><strong>This is branch-based publishing.</strong> Set your repo's <strong>Settings → Pages →
+Source</strong> to <strong>&quot;Deploy from a branch&quot; → <code>gh-pages</code> / <code>(root)</code></strong>. (That differs
+from the hand-rolled guide, which uses the &quot;GitHub Actions&quot; artifact source —
+pick one model, not both.)</p>
+</blockquote>
+<h2>Deploy to GitHub Pages</h2>
+<p>Add <code>.github/workflows/deploy.yml</code>, replacing <code>my-repo</code> with your repository name:</p>
+<pre><code class="language-yaml">name: Deploy
+on:
+  push: { branches: [main] }
+  workflow_dispatch:
+jobs:
+  deploy:
+    permissions:
+      contents: write          # required — the workflow pushes to gh-pages
+    uses: gofuego/.github/.github/workflows/fuego-deploy.yml@main
+    with:
+      pages_base: /my-repo
+      check_links: true        # fail the deploy on a broken internal link
+</code></pre>
+<p>On every push to <code>main</code>, your site builds and publishes to <code>gh-pages</code>.</p>
+<h2>Check pull requests before they merge</h2>
+<p>Pair the deploy with <code>fuego-check</code> — it compiles and validates the site (<code>go run . validate</code>) <strong>without</strong> publishing, so a broken build is caught on the PR. Add
+<code>.github/workflows/check.yml</code>:</p>
+<pre><code class="language-yaml">name: Check
+on:
+  pull_request:
+  push:
+    branches-ignore: [main, gh-pages, fuego-pages, fuego-studio-edits]
+jobs:
+  check:
+    uses: gofuego/.github/.github/workflows/fuego-check.yml@main
+</code></pre>
+<p>With a <code>develop</code>-default / protected-<code>main</code> setup, this means: <strong>check runs on
+pull requests and <code>develop</code> pushes; deploy runs only when you merge to <code>main</code>.</strong></p>
+<h2>Dual-host (Pages + fuego-studio)</h2>
+<p>Hosting the same site on GitHub Pages <em>and</em> in fuego-studio? Pass both bases —
+each builds with its own mount path and publishes to its own branch:</p>
+<pre><code class="language-yaml">    with:
+      pages_base: /my-repo            # → gh-pages
+      studio_base: /my-org/my-repo    # → fuego-pages
+      check_links: true
+</code></pre>
+<h2>A site that lives in a subdirectory</h2>
+<p>If your Fuego project is a <strong>subset</strong> of a larger repo (e.g. a <code>docs/</code> folder
+inside a code repo), set <code>project_dir</code> — the workflow builds there and publishes
+<code>docs/build</code>:</p>
+<pre><code class="language-yaml">    with:
+      project_dir: docs
+      pages_base: /my-repo
+</code></pre>
+<p><code>fuego-check</code> takes the same <code>project_dir</code> input.</p>
+<h2>Other reusable workflows</h2>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>For</th>
+<th>Key inputs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fuego-deploy.yml</code></td>
+<td>building &amp; publishing a site</td>
+<td><code>pages_base</code>, <code>studio_base</code>, <code>project_dir</code>, <code>check_links</code></td>
+</tr>
+<tr>
+<td><code>fuego-check.yml</code></td>
+<td>validating a site on PRs</td>
+<td><code>project_dir</code></td>
+</tr>
+<tr>
+<td><code>go-ci.yml</code></td>
+<td>a Go module (a custom parser/pack repo): <code>build</code> + <code>vet</code> + <code>test -race</code></td>
+<td><code>working_directory</code>, <code>race</code></td>
+</tr>
+<tr>
+<td><code>fuego-adr-deploy.yml</code></td>
+<td>publishing an <a href="https://github.com/gofuego/fuego-adr">ADR</a> site from <code>*.adr.md</code> files</td>
+<td><code>adr_path</code>, <code>pages_base</code>, <code>studio_base</code></td>
+</tr>
+</tbody>
+</table>
+<p>All default the Go toolchain to <code>1.25</code> (Fuego's minimum). Full input reference is in
+the <a href="https://github.com/gofuego/.github"><code>gofuego/.github</code> README</a>.</p>
+<h2>Base-aware links</h2>
+<p>However you deploy, a site served under a subpath needs base-aware links or they
+break. Prefix template URLs with <code>{{.Site.BaseURL}}</code> and use base-relative links
+(no leading slash) in content — see <a href="docs/templates/#linking">Linking</a> and
+<a href="docs/how-to/check-for-broken-links/">Check for Broken Links</a>.</p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>
