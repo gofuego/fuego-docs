@@ -133,7 +133,7 @@ root: <code>content/index.md</code> → <code>/</code>, <code>content/blog/index
 <p>Generates virtual pages for taxonomies and collections:</p>
 <ul>
 <li><strong>Taxonomy term pages</strong> — one per unique term value (e.g., <code>/tags/go/</code>)</li>
-<li><strong>Taxonomy index pages</strong> — list all terms (e.g., <code>/tags/</code>)</li>
+<li><strong>Taxonomy index pages</strong> — list all terms (e.g., <code>/tags/</code>); generated whenever <code>index_path</code> is configured, even when no page carries the field yet</li>
 <li><strong>Collection pages</strong> — glob-matched, sorted listing pages</li>
 </ul>
 <p>Listings with <code>page_size</code> set are split into numbered pages (<code>/blog/</code>, <code>/blog/page/2/</code>, …), each carrying a <code>.Paginator</code>. <strong>Index hooks</strong> run here too — the supported place to add your own virtual pages, since their URLs go through the collision re-check that catches conflicts between virtual and real pages.</p>
@@ -153,7 +153,7 @@ root: <code>content/index.md</code> → <code>/</code>, <code>content/blog/index
 <h3>STATIC</h3>
 <p>Copies static assets to the output root, in precedence order: each registered pack's <code>static/</code> subtree first, then the user's <code>public/</code> directory (so user files win on conflict), then content-colocated binary assets at their routed paths.</p>
 <h2>Partial Execution</h2>
-<p><code>validate</code> runs through INDEX without RENDER — catching config errors, parse failures, and collisions without producing output. <code>list</code> runs through ROUTE and prints the page table. This is controlled by <code>pipeline.RunUntil(phase)</code>.</p>
+<p><code>validate</code> runs through INDEX without RENDER — catching config errors, parse failures, and collisions without producing output. <code>list</code> also runs through INDEX and prints the page table, virtual pages included. This is controlled by <code>pipeline.RunUntil(phase)</code>.</p>
 <h2>Incremental Builds</h2>
 <p><code>fuego build --incremental</code> (and the dev server, always) keeps an on-disk cache of parsed pages so unchanged content isn't re-parsed on every rebuild.</p>
 <p>The cache is keyed by a header — a hash of the <strong>engine binary</strong>, the <strong>resolved config</strong>, and the <strong>theme tree</strong> — plus a per-file <strong>content hash</strong>:</p>
