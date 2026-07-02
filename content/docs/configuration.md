@@ -72,7 +72,7 @@ taxonomies:
     page_size: 10          # optional: paginate term pages
 ```
 
-Pages with a `tags` field in frontmatter are automatically indexed. Virtual pages for each term and the index are generated during the INDEX phase. With `page_size` set, term pages over that size split into `/tags/{term}/page/{n}/` — see [Paginate a Collection](docs/how-to/paginate-a-collection/).
+Pages with a `tags` field in frontmatter are automatically indexed. Virtual pages for each term and the index are generated during the INDEX phase. Term pages exist only for terms that appear in content, but the index page is always generated when `index_path` is set — even if no content carries the field yet — so themes can link to it unconditionally. With `page_size` set, term pages over that size split into `/tags/{term}/page/{n}/` — see [Paginate a Collection](docs/how-to/paginate-a-collection/).
 
 ## Collections
 

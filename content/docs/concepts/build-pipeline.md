@@ -77,7 +77,7 @@ After resolution, checks for URL collisions. A collision is a `GlobalFatal` erro
 Generates virtual pages for taxonomies and collections:
 
 - **Taxonomy term pages** — one per unique term value (e.g., `/tags/go/`)
-- **Taxonomy index pages** — list all terms (e.g., `/tags/`)
+- **Taxonomy index pages** — list all terms (e.g., `/tags/`); generated whenever `index_path` is configured, even when no page carries the field yet
 - **Collection pages** — glob-matched, sorted listing pages
 
 Listings with `page_size` set are split into numbered pages (`/blog/`, `/blog/page/2/`, …), each carrying a `.Paginator`. **Index hooks** run here too — the supported place to add your own virtual pages, since their URLs go through the collision re-check that catches conflicts between virtual and real pages.
@@ -107,7 +107,7 @@ Copies static assets to the output root, in precedence order: each registered pa
 
 ## Partial Execution
 
-`validate` runs through INDEX without RENDER — catching config errors, parse failures, and collisions without producing output. `list` runs through ROUTE and prints the page table. This is controlled by `pipeline.RunUntil(phase)`.
+`validate` runs through INDEX without RENDER — catching config errors, parse failures, and collisions without producing output. `list` also runs through INDEX and prints the page table, virtual pages included. This is controlled by `pipeline.RunUntil(phase)`.
 
 ## Incremental Builds
 
