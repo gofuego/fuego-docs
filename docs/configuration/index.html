@@ -138,7 +138,7 @@
     index_layout: &quot;tag-index&quot;
     page_size: 10          # optional: paginate term pages
 </code></pre>
-<p>Pages with a <code>tags</code> field in frontmatter are automatically indexed. Virtual pages for each term and the index are generated during the INDEX phase. With <code>page_size</code> set, term pages over that size split into <code>/tags/{term}/page/{n}/</code> — see <a href="docs/how-to/paginate-a-collection/">Paginate a Collection</a>.</p>
+<p>Pages with a <code>tags</code> field in frontmatter are automatically indexed. Virtual pages for each term and the index are generated during the INDEX phase. Term pages exist only for terms that appear in content, but the index page is always generated when <code>index_path</code> is set — even if no content carries the field yet — so themes can link to it unconditionally. With <code>page_size</code> set, term pages over that size split into <code>/tags/{term}/page/{n}/</code> — see <a href="docs/how-to/paginate-a-collection/">Paginate a Collection</a>.</p>
 <h2>Collections</h2>
 <p>Glob-matched, sorted listing pages:</p>
 <pre><code class="language-yaml">collections:
