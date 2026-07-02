@@ -61,6 +61,8 @@ type Parser interface {
 
 Use `core.SplitFrontmatter(raw)` if your format carries YAML frontmatter, or the convenience wrappers `core.WithYAMLFrontmatter(...)` / `core.WithNoEnvelope(...)` for the common cases. For extensionless files like `Dockerfile`, also implement `core.FilenameParser` with `Filenames() []string`.
 
+**Keep envelope values JSON-shaped** — maps, slices, strings, numbers, bools (`map[string]any`, `[]map[string]string`, `[]string`, …) rather than your own structs or pointers. Anything a YAML or JSON decode could produce is fine. Pages whose envelopes hold other types still build normally, but are skipped by the incremental-build cache (a warning names them), so they re-parse on every `serve` rebuild.
+
 Register it in `main.go`:
 
 ```go
