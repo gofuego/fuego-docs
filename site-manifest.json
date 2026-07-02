@@ -271,7 +271,7 @@
       "envelope": {
         "layout": "doc",
         "nav_section": "Guides",
-        "nav_weight": 6,
+        "nav_weight": 7,
         "tags": [
           "how-to",
           "links",
@@ -296,6 +296,25 @@
           "deployment"
         ],
         "title": "Deploy to GitHub Pages"
+      }
+    },
+    {
+      "url": "/docs/how-to/deploy-with-reusable-workflows/",
+      "type": "md",
+      "layout": "doc",
+      "source_path": "docs/how-to/deploy-with-reusable-workflows.md",
+      "output_path": "docs/how-to/deploy-with-reusable-workflows/index.html",
+      "title": "Deploy with Reusable Workflows",
+      "envelope": {
+        "layout": "doc",
+        "nav_section": "Guides",
+        "nav_weight": 6,
+        "tags": [
+          "how-to",
+          "deployment",
+          "ci"
+        ],
+        "title": "Deploy with Reusable Workflows"
       }
     },
     {
@@ -398,7 +417,6 @@
       "url": "/tags/",
       "type": "taxonomy-index",
       "layout": "tag-index",
-      "source_path": "_virtual/taxonomy/tags/_index",
       "output_path": "tags/index.html",
       "title": "All Tags",
       "envelope": {
@@ -410,7 +428,6 @@
       "url": "/tags/architecture/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/architecture",
       "output_path": "tags/architecture/index.html",
       "title": "Tags: architecture",
       "envelope": {
@@ -423,7 +440,6 @@
       "url": "/tags/ci/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/ci",
       "output_path": "tags/ci/index.html",
       "title": "Tags: ci",
       "envelope": {
@@ -436,7 +452,6 @@
       "url": "/tags/cli/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/cli",
       "output_path": "tags/cli/index.html",
       "title": "Tags: cli",
       "envelope": {
@@ -449,7 +464,6 @@
       "url": "/tags/collections/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/collections",
       "output_path": "tags/collections/index.html",
       "title": "Tags: collections",
       "envelope": {
@@ -462,7 +476,6 @@
       "url": "/tags/concepts/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/concepts",
       "output_path": "tags/concepts/index.html",
       "title": "Tags: concepts",
       "envelope": {
@@ -475,7 +488,6 @@
       "url": "/tags/config/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/config",
       "output_path": "tags/config/index.html",
       "title": "Tags: config",
       "envelope": {
@@ -488,7 +500,6 @@
       "url": "/tags/deployment/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/deployment",
       "output_path": "tags/deployment/index.html",
       "title": "Tags: deployment",
       "envelope": {
@@ -501,7 +512,6 @@
       "url": "/tags/getting-started/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/getting-started",
       "output_path": "tags/getting-started/index.html",
       "title": "Tags: getting-started",
       "envelope": {
@@ -514,7 +524,6 @@
       "url": "/tags/go/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/go",
       "output_path": "tags/go/index.html",
       "title": "Tags: go",
       "envelope": {
@@ -527,7 +536,6 @@
       "url": "/tags/how-to/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/how-to",
       "output_path": "tags/how-to/index.html",
       "title": "Tags: how-to",
       "envelope": {
@@ -540,7 +548,6 @@
       "url": "/tags/links/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/links",
       "output_path": "tags/links/index.html",
       "title": "Tags: links",
       "envelope": {
@@ -553,7 +560,6 @@
       "url": "/tags/packs/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/packs",
       "output_path": "tags/packs/index.html",
       "title": "Tags: packs",
       "envelope": {
@@ -566,7 +572,6 @@
       "url": "/tags/parsers/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/parsers",
       "output_path": "tags/parsers/index.html",
       "title": "Tags: parsers",
       "envelope": {
@@ -579,7 +584,6 @@
       "url": "/tags/reference/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/reference",
       "output_path": "tags/reference/index.html",
       "title": "Tags: reference",
       "envelope": {
@@ -592,7 +596,6 @@
       "url": "/tags/taxonomies/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/taxonomies",
       "output_path": "tags/taxonomies/index.html",
       "title": "Tags: taxonomies",
       "envelope": {
@@ -605,7 +608,6 @@
       "url": "/tags/templates/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/templates",
       "output_path": "tags/templates/index.html",
       "title": "Tags: templates",
       "envelope": {
@@ -618,7 +620,6 @@
       "url": "/tags/tutorial/",
       "type": "taxonomy-term",
       "layout": "tag",
-      "source_path": "_virtual/taxonomy/tags/tutorial",
       "output_path": "tags/tutorial/index.html",
       "title": "Tags: tutorial",
       "envelope": {
@@ -631,7 +632,6 @@
       "url": "/tutorials/",
       "type": "collection",
       "layout": "listing",
-      "source_path": "_virtual/collection/tutorials",
       "output_path": "tutorials/index.html",
       "title": "Tutorials",
       "envelope": {
@@ -643,7 +643,6 @@
       "url": "/tutorials/page/2/",
       "type": "collection",
       "layout": "listing",
-      "source_path": "_virtual/collection/tutorials/page-2",
       "output_path": "tutorials/page/2/index.html",
       "title": "Tutorials",
       "envelope": {
@@ -655,7 +654,6 @@
       "url": "/tutorials/page/3/",
       "type": "collection",
       "layout": "listing",
-      "source_path": "_virtual/collection/tutorials/page-3",
       "output_path": "tutorials/page/3/index.html",
       "title": "Tutorials",
       "envelope": {
@@ -672,13 +670,14 @@
           4
         ],
         "ci": [
-          14
+          14,
+          16
         ],
         "cli": [
           1
         ],
         "collections": [
-          16
+          17
         ],
         "concepts": [
           2,
@@ -692,7 +691,8 @@
           12
         ],
         "deployment": [
-          15
+          15,
+          16
         ],
         "getting-started": [
           9
@@ -700,8 +700,8 @@
         "go": [
           3,
           10,
-          18,
-          20
+          19,
+          21
         ],
         "how-to": [
           11,
@@ -709,7 +709,8 @@
           13,
           14,
           15,
-          16
+          16,
+          17
         ],
         "links": [
           14
@@ -718,12 +719,12 @@
           3,
           5,
           6,
-          18
+          19
         ],
         "parsers": [
           8,
-          19,
-          20
+          20,
+          21
         ],
         "reference": [
           1,
@@ -731,7 +732,7 @@
           7,
           8,
           10,
-          17
+          18
         ],
         "taxonomies": [
           12
@@ -739,14 +740,14 @@
         "templates": [
           11,
           13,
-          17,
-          19
+          18,
+          20
         ],
         "tutorial": [
           9,
-          18,
           19,
-          20
+          20,
+          21
         ]
       }
     }
@@ -754,7 +755,7 @@
   "collections": {
     "tutorials": {
       "pages": [
-        19
+        20
       ]
     }
   }

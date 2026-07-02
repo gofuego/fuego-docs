@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
             <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
@@ -88,6 +89,9 @@
     index_path: &quot;/tags&quot;
     index_layout: &quot;tag-index&quot;
 </code></pre>
+<p>When <code>index_path</code> is set, the index page is always generated — even if no
+content carries the field yet — so themes can link to it unconditionally.
+Term pages exist only for terms that appear in content.</p>
 <h2>2. Tag Your Content</h2>
 <p>Add a <code>tags</code> field to any content file's frontmatter:</p>
 <pre><code class="language-yaml">---

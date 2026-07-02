@@ -48,6 +48,7 @@
             <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
             <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
@@ -83,6 +84,14 @@
 <pre><code class="language-yaml">site:
   name: &quot;My Site&quot;
   base_url: &quot;&quot;          # root deploy; use &quot;/my-repo&quot; for a subpath (e.g. GitHub Pages)
+</code></pre>
+<h2>Directories</h2>
+<p>Override where Fuego reads and writes (all optional; defaults shown):</p>
+<pre><code class="language-yaml">dirs:
+  content: &quot;content&quot;    # source content files
+  theme: &quot;theme&quot;        # templates (base.html, layouts/, renderers/, partials/, outputs/)
+  output: &quot;build&quot;       # generated site
+  static: &quot;public&quot;      # static assets copied to the output root
 </code></pre>
 <h2>Routes</h2>
 <p>Three-tier URL resolution: frontmatter <code>slug</code> &gt; config route pattern &gt; filesystem mirror.</p>
