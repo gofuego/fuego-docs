@@ -24,6 +24,10 @@ taxonomies:
     index_layout: "tag-index"
 ```
 
+When `index_path` is set, the index page is always generated — even if no
+content carries the field yet — so themes can link to it unconditionally.
+Term pages exist only for terms that appear in content.
+
 ## 2. Tag Your Content
 
 Add a `tags` field to any content file's frontmatter:

@@ -8,6 +8,11 @@ tags:
   - deployment
 ---
 
+This guide builds a **self-contained** workflow you own end to end. For a
+ready-made alternative — reusable workflows that also handle multi-host publishing
+and subdirectory sites — see [Deploy with Reusable
+Workflows](docs/how-to/deploy-with-reusable-workflows/).
+
 ## Prerequisites
 
 - A GitHub repository with your Fuego site

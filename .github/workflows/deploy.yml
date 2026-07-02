@@ -7,11 +7,11 @@ on:
 
 jobs:
   deploy:
-    # Dual-hosted: fuego-pages (studio) + gh-pages (public GitHub Pages).
+    # main → gh-pages: the public, read-only GitHub Pages site.
+    # The editable fuego-studio preview is built from develop in preview.yml.
     permissions:
       contents: write
     uses: gofuego/.github/.github/workflows/fuego-deploy.yml@main
     with:
-      studio_base: /gofuego/fuego-docs
       pages_base: /fuego-docs
       check_links: true

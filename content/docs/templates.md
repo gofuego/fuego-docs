@@ -70,7 +70,7 @@ The second argument becomes the partial's data (`.`); omit it to pass nothing. P
 
 | Function | Example | Description |
 |---|---|---|
-| `render` | `{{render .Page.Nodes}}` | Recursively render nodes through renderer templates |
+| `render` | `{{render .Children}}` | Recursively render a `[]Node` through renderer templates (used inside a renderer template to render child nodes; the page body is already in `.Page.Content`) |
 | `safeHTML` | `{{safeHTML .Page.Envelope.snippet}}` | Mark a string as raw HTML (skips escaping) |
 | `partial` | `{{partial "nav" .}}` | Execute a template from `theme/partials/` |
 | `dict` | `{{dict "k1" "v1" "k2" "v2"}}` | Build a map from key/value pairs, for partial arguments |

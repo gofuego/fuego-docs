@@ -18,6 +18,18 @@ site:
   base_url: ""          # root deploy; use "/my-repo" for a subpath (e.g. GitHub Pages)
 ```
 
+## Directories
+
+Override where Fuego reads and writes (all optional; defaults shown):
+
+```yaml
+dirs:
+  content: "content"    # source content files
+  theme: "theme"        # templates (base.html, layouts/, renderers/, partials/, outputs/)
+  output: "build"       # generated site
+  static: "public"      # static assets copied to the output root
+```
+
 ## Routes
 
 Three-tier URL resolution: frontmatter `slug` > config route pattern > filesystem mirror.
