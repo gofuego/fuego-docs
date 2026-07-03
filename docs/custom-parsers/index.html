@@ -116,6 +116,7 @@
 }
 </code></pre>
 <p>Use <code>core.SplitFrontmatter(raw)</code> if your format carries YAML frontmatter, or the convenience wrappers <code>core.WithYAMLFrontmatter(...)</code> / <code>core.WithNoEnvelope(...)</code> for the common cases. For extensionless files like <code>Dockerfile</code>, also implement <code>core.FilenameParser</code> with <code>Filenames() []string</code>.</p>
+<p><strong>Keep envelope values JSON-shaped</strong> — maps, slices, strings, numbers, bools (<code>map[string]any</code>, <code>[]map[string]string</code>, <code>[]string</code>, …) rather than your own structs or pointers. Anything a YAML or JSON decode could produce is fine. Pages whose envelopes hold other types still build normally, but are skipped by the incremental-build cache (a warning names them), so they re-parse on every <code>serve</code> rebuild.</p>
 <p>Register it in <code>main.go</code>:</p>
 <pre><code class="language-go">eng := engine.New()
 eng.Register(&amp;MyCustomParser{})
