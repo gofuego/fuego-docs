@@ -121,7 +121,23 @@ fuego build --strict-links           # fail the build on a broken internal link
 <p>Scaffold a new Fuego project.</p>
 <pre><code class="language-bash">fuego init mysite
 </code></pre>
-<p>Creates a working project with a <code>.card</code> flashcard DSL, theme, and sample content.</p>
+<p>Creates a working project with Markdown registered, a <code>.card</code> flashcard DSL,
+theme, and sample content.</p>
+<p><strong>Pick the format parsers</strong> with <code>--formats</code> (the list is the exact set):</p>
+<pre><code class="language-bash">fuego init mysite --formats markdown,mermaid,openapi
+</code></pre>
+<p>Short names resolve by convention to the
+<a href="https://github.com/gofuego/fuego-formats">fuego-formats</a> modules (<code>mermaid</code>,
+<code>openapi</code>, <code>dbml</code>, <code>playwright</code>, <code>docker</code>, <code>kubernetes</code>, <code>adr</code>, …); <code>markdown</code>
+resolves to the engine's first-party parser; a full package path installs a
+third-party format. The convention is that a format package exports
+<code>Parser(opts ...Option) core.Parser</code>.</p>
+<p>Init pins each module in <code>go.mod</code>, registers the parsers in a generated
+<code>formats.go</code> (<code>main.go</code> calls <code>registerFormats(eng)</code> once), and materializes
+each format's <strong>contract</strong> — its <code>schema.md</code> and golden fixtures — into
+<code>docs/formats/</code>, indexed from the scaffolded CLAUDE.md. That gives a coding
+agent working on your theme the exact node types and envelope keys each parser
+emits, locally, at the pinned version.</p>
 <p><strong>Start from a format pack</strong> with <code>--pack</code>:</p>
 <pre><code class="language-bash">fuego init mysite --pack github.com/gofuego/fuego-adr/adr
 </code></pre>
@@ -130,7 +146,24 @@ fuego build --strict-links           # fail the build on a broken internal link
 that a pack module's package exports a <code>Pack() core.Pack</code> function; the package
 name defaults to the module path's last segment. If the package name differs,
 pass <code>--pack-symbol &lt;name&gt;</code>. Init never compiles or runs the pack — it only
-downloads it — so installing a pack can't execute third-party code.</p>
+downloads it — so installing a pack can't execute third-party code. (A pack
+bundles parsers <em>plus</em> a theme and hooks; <code>--formats</code> installs bare parsers
+you theme yourself. The two compose.)</p>
+<h3>formats</h3>
+<p>Manage a project's format modules — run inside the project (also available as
+<code>go run . formats ...</code>):</p>
+<pre><code class="language-bash">fuego formats add dbml        # install a format: dependency + registration + docs
+fuego formats add github.com/acme/fuego-terraform --symbol terraform
+fuego formats sync            # refresh docs/formats/ from the pinned versions
+</code></pre>
+<p><code>add</code> resolves the name like <code>--formats</code> does, adds the module to <code>go.mod</code>,
+regenerates <code>formats.go</code> (a file the CLI owns — hand edits are overwritten),
+and materializes the format's contract under <code>docs/formats/&lt;name&gt;/</code> without
+touching any other file. On a project without a generated <code>formats.go</code> it
+materializes the docs and prints the import + <code>eng.Register(...)</code> lines to add
+manually — it never rewrites your code. <code>sync</code> re-copies every installed
+format's docs from the versions <code>go.mod</code> pins; run it after upgrading a
+module.</p>
 <h2>Global Flags</h2>
 <table>
 <thead>

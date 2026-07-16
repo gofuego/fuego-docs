@@ -84,7 +84,7 @@
 <pre><code>PREBUILD       →  shell hook (npm, tailwind, etc.)
 INIT           →  merge declarative + compiled parsers
 DISCOVER       →  walk content dir, apply ignore patterns
-PARSE          →  split frontmatter, run parsers (concurrent)
+PARSE          →  run parsers: envelope + AST (concurrent)
   ↓ AfterParse hooks
 ROUTE          →  resolve URLs, detect collisions
 INDEX          →  build taxonomies + collections, paginate
@@ -108,17 +108,17 @@ STATIC         →  copy public/ and colocated assets
 <h3>DISCOVER</h3>
 <p>Walks the <code>content/</code> directory and classifies each file:</p>
 <ul>
-<li><strong>Content files</strong> — matched to a parser by extension (<code>.md</code>, <code>.trivia</code>, <code>.card</code>, etc.)</li>
+<li><strong>Content files</strong> — claimed by a registered parser, by filename pattern (<code>Dockerfile</code>, <code>*.adr.md</code>) or bare extension (<code>.md</code>, <code>.trivia</code>, <code>.card</code>). Patterns are checked before extensions and the most specific claim wins, so <code>guide.adr.md</code> belongs to the parser claiming <code>*.adr.md</code>, not the <code>md</code> parser.</li>
 <li><strong>Binary assets</strong> — images, fonts, etc. — copied to output alongside their routed content</li>
 <li><strong>Ignored files</strong> — matched by <code>ignore</code> glob patterns in config</li>
 </ul>
 <h3>PARSE</h3>
 <p>For each content file, in parallel:</p>
 <ol>
-<li>Split the file at <code>---</code> delimiters to extract YAML frontmatter (the envelope) and the raw payload</li>
-<li>Dispatch the payload to the matching parser</li>
-<li>The parser returns <code>[]Node</code> — the universal AST</li>
+<li>Dispatch the raw file to the parser that claimed it at DISCOVER</li>
+<li>The parser returns the envelope (metadata) and <code>[]Node</code> — the universal AST. Envelope extraction is the parser's job: YAML frontmatter is one option (<code>core.WithYAMLFrontmatter</code>), not a requirement</li>
 </ol>
+<p>A parser that also implements <code>core.TreeParser</code> expands one file into a <strong>tree of real pages</strong>: the engine calls <code>ParseTree</code> instead of <code>Parse</code> and turns the returned root plus children into an index page and one page per child, each with its own envelope — so a single OpenAPI spec or database schema becomes a whole routed section. See <a href="docs/custom-parsers/">Custom Parsers</a>.</p>
 <p>Concurrency is bounded by <code>runtime.NumCPU()</code> via <code>errgroup</code>.</p>
 <h3>ROUTE</h3>
 <p>Assigns a URL to each page using three-tier priority:</p>
@@ -128,6 +128,7 @@ STATIC         →  copy public/ and colocated assets
 <li>Filesystem mirror — the default. An <code>index</code> file routes to its directory's
 root: <code>content/index.md</code> → <code>/</code>, <code>content/blog/index.md</code> → <code>/blog/</code>.</li>
 </ol>
+<p>Pages expanded from a tree parser are routed in a second pass: the root goes through the three tiers as normal, then each child's URL is the root's resolved URL joined with the child's slug-path segments.</p>
 <p>After resolution, checks for URL collisions. A collision is a <code>GlobalFatal</code> error that stops the build.</p>
 <h3>INDEX</h3>
 <p>Generates virtual pages for taxonomies and collections:</p>
@@ -149,7 +150,7 @@ root: <code>content/index.md</code> → <code>/</code>, <code>content/blog/index
 <h3>OUTPUTS</h3>
 <p>Renders every file under <code>theme/outputs/</code> as a text template fed with <code>.Site</code>, writing non-HTML site assets — RSS feeds, sitemaps, <code>robots.txt</code>, search indexes — to matching output paths. See <a href="docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a>.</p>
 <h3>MANIFEST</h3>
-<p>Writes <code>site-manifest.json</code> — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its <code>url</code>, <code>type</code>, <code>layout</code>, <code>title</code>, <code>summary</code>, <code>output_path</code> (the generated file, e.g. <code>blog/post/index.html</code>), <code>source_path</code> (the source file relative to the content directory — <em>omitted</em> for virtual pages, which are non-editable), and the flattened <code>envelope</code>; the top-level <code>content_root</code> is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.</p>
+<p>Writes <code>site-manifest.json</code> — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its <code>url</code>, <code>type</code>, <code>layout</code>, <code>title</code>, <code>summary</code>, <code>output_path</code> (the generated file, e.g. <code>blog/post/index.html</code>), <code>source_path</code> (the source file relative to the content directory — <em>omitted</em> for virtual pages, which are non-editable), and the flattened <code>envelope</code>. Pages expanded from a tree-parsed artifact all list the shared artifact as their <code>source_path</code>, so several entries may map to one source file — root and children stay distinguishable by <code>url</code>/<code>output_path</code>; the top-level <code>content_root</code> is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.</p>
 <h3>STATIC</h3>
 <p>Copies static assets to the output root, in precedence order: each registered pack's <code>static/</code> subtree first, then the user's <code>public/</code> directory (so user files win on conflict), then content-colocated binary assets at their routed paths.</p>
 <h2>Partial Execution</h2>
@@ -161,7 +162,7 @@ root: <code>content/index.md</code> → <code>/</code>, <code>content/blog/index
 <li>If the header matches, content files whose hash is unchanged skip PARSE and are restored from cache; changed and new files are parsed normally; deleted files have their output removed (orphan cleanup via a manifest-style diff).</li>
 <li>If the header doesn't match — you rebuilt the engine, edited <code>config.yaml</code>, or touched a template — the whole cache is discarded and the build falls back to a full, clean rebuild.</li>
 </ul>
-<p>ROUTE and INDEX always run over the full page set (they are cheap, <code>O(pages)</code> map work). RENDER is <strong>narrowed</strong> to the pages whose output can actually differ: the changed/new pages, every virtual page (taxonomy, collection, pagination — they aggregate content), and any page whose template reads <code>.Site.Pages</code> directly or through a partial. Pages with a site-blind layout that didn't change keep their existing HTML. On a 10k-page site, a single-file edit rebuilds in a fraction of a full build.</p>
+<p>ROUTE and INDEX always run over the full page set (they are cheap, <code>O(pages)</code> map work). RENDER is <strong>narrowed</strong> to the pages whose output can actually differ: the changed/new pages, every page expanded from a changed tree-parsed artifact, every virtual page (taxonomy, collection, pagination — they aggregate content), and any page whose template reads <code>.Site.Pages</code> directly or through a partial. Pages with a site-blind layout that didn't change keep their existing HTML. On a 10k-page site, a single-file edit rebuilds in a fraction of a full build.</p>
 <p>Despite the narrowing, an incremental build produces <strong>byte-identical output to a clean build</strong> of the same inputs. That guarantee is enforced in CI: every fixture is built clean and then incrementally under each mutation (edit, add, delete, theme touch, config touch) and the output trees are compared byte-for-byte. A corrupt or version-mismatched cache is treated as a miss, never an error.</p>
 
 </article>

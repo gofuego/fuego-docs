@@ -110,7 +110,7 @@
 <p>This uniformity means the entire pipeline after PARSE is format-agnostic. Routing, taxonomy indexing, collections, rendering, manifest generation — all work the same regardless of whether the content started as <code>.md</code>, <code>.trivia</code>, or <code>.recipe</code>.</p>
 <h2>Markdown is Still First-Class</h2>
 <p>Format-agnostic doesn't mean anti-Markdown. Fuego ships a first-party Markdown parser with full GFM support (tables, strikethrough, autolinks, task lists) — you opt in by registering it (<code>eng.Register(markdown.Parser())</code>), the same way you'd register any parser. It emits a single <code>Raw: true</code> node that the renderer passes through as HTML.</p>
-<p>You can even mix formats in the same site: Markdown for blog posts, <code>.trivia</code> for quiz pages, <code>.card</code> for flashcards. Each file extension dispatches to its own parser, and the pipeline handles the rest.</p>
+<p>You can even mix formats in the same site: Markdown for blog posts, <code>.trivia</code> for quiz pages, <code>.card</code> for flashcards. Each file dispatches to the parser that claims it — by filename pattern or bare extension, most specific claim first — and the pipeline handles the rest.</p>
 <h2>When This Matters</h2>
 <p>Format-agnostic design shines when:</p>
 <ul>

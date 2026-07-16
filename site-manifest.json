@@ -16,8 +16,8 @@
           },
           {
             "ghost": true,
-            "label": "Build a format pack",
-            "url": "/docs/tutorials/build-a-format-pack/"
+            "label": "Bring your own format",
+            "url": "/docs/custom-parsers/"
           }
         ],
         "layout": "home",

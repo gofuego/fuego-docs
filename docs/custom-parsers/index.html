@@ -115,13 +115,59 @@
     Parse(raw []byte) (Envelope, []Node, error)
 }
 </code></pre>
-<p>Use <code>core.SplitFrontmatter(raw)</code> if your format carries YAML frontmatter, or the convenience wrappers <code>core.WithYAMLFrontmatter(...)</code> / <code>core.WithNoEnvelope(...)</code> for the common cases. For extensionless files like <code>Dockerfile</code>, also implement <code>core.FilenameParser</code> with <code>Filenames() []string</code>.</p>
+<p>Use <code>core.SplitFrontmatter(raw)</code> if your format carries YAML frontmatter, or the convenience wrappers <code>core.WithYAMLFrontmatter(...)</code> / <code>core.WithNoEnvelope(...)</code> for the common cases. To claim files by name rather than bare extension — extensionless files like <code>Dockerfile</code>, or compound suffixes like <code>*.adr.md</code> — also implement <code>core.FilenameParser</code> with <code>Filenames() []string</code>. Patterns match the base filename, and a filename claim beats a bare-extension claim (see Parser Precedence below).</p>
 <p><strong>Keep envelope values JSON-shaped</strong> — maps, slices, strings, numbers, bools (<code>map[string]any</code>, <code>[]map[string]string</code>, <code>[]string</code>, …) rather than your own structs or pointers. Anything a YAML or JSON decode could produce is fine. Pages whose envelopes hold other types still build normally, but are skipped by the incremental-build cache (a warning names them), so they re-parse on every <code>serve</code> rebuild.</p>
 <p>Register it in <code>main.go</code>:</p>
 <pre><code class="language-go">eng := engine.New()
 eng.Register(&amp;MyCustomParser{})
 eng.Run(os.Args)
 </code></pre>
+<h2>Tree Parsers</h2>
+<p>A plain parser turns one file into one page. A parser that <em>also</em> implements <code>core.TreeParser</code> can expand one rich artifact — an OpenAPI spec, a database schema — into a whole section: an index page plus a tree of real pages.</p>
+<pre><code class="language-go">type TreeParser interface {
+    Parser
+    ParseTree(raw []byte) (*PageTree, error)
+}
+
+type PageTree struct {
+    Envelope Envelope
+    Nodes    []Node
+    Children map[string]*PageTree
+}
+</code></pre>
+<p>The engine detects <code>TreeParser</code> by interface assertion at PARSE — no registration change, and plain parsers are untouched. When a parser implements it, the engine calls <code>ParseTree</code> (<code>Parse</code> is not called for that file) and expands the returned tree:</p>
+<ul>
+<li>The <strong>root</strong> <code>PageTree</code>'s envelope and nodes become the source file's own routed page, exactly as a plain parser's output would.</li>
+<li>Each entry in <strong><code>Children</code></strong> becomes a real page. Keys are <strong>relative slug paths</strong> — one or more <code>/</code>-separated segments like <code>&quot;tags/billing/get-invoice&quot;</code> — and nesting a <code>PageTree</code> under a key extends the path.</li>
+<li>A child's <strong>URL</strong> is the root's routed URL joined with its slug-path segments, composed <em>after</em> the root goes through normal three-tier routing — so <code>slug</code>, route patterns, and the index-file convention on the root all still apply. If <code>content/api.openapi.yaml</code> routes to <code>/api/</code>, the child <code>&quot;operations/get-invoice&quot;</code> lands at <code>/api/operations/get-invoice/</code>.</li>
+<li>Children carry their <strong>own envelopes</strong>, so taxonomies, collections, and pagination see them like any hand-written page.</li>
+</ul>
+<pre><code class="language-go">func (p *APIParser) ParseTree(raw []byte) (*core.PageTree, error) {
+    spec, err := decodeSpec(raw)
+    if err != nil {
+        return nil, err
+    }
+    tree := &amp;core.PageTree{
+        Envelope: core.Envelope{&quot;title&quot;: spec.Title},
+        Nodes:    overviewNodes(spec),
+        Children: map[string]*core.PageTree{},
+    }
+    for _, op := range spec.Operations {
+        tree.Children[&quot;operations/&quot;+op.Slug] = &amp;core.PageTree{
+            Envelope: core.Envelope{&quot;title&quot;: op.Summary, &quot;tags&quot;: op.Tags},
+            Nodes:    operationNodes(op),
+        }
+    }
+    return tree, nil
+}
+</code></pre>
+<p>Conventions and behavior to know:</p>
+<ul>
+<li><strong>Keep child envelopes JSON-shaped</strong> (same rule as above) so the whole tree stays cache-eligible. On incremental builds the tree is cached as one unit under the source file's content hash: one child holding a non-JSON-shaped value drops the <em>whole file</em> from the cache, not just that child.</li>
+<li>A child envelope may set <code>layout</code> and <code>type</code> like any page; a <strong>missing layout falls back to the base template</strong> silently.</li>
+<li>Two children whose slug paths compose to the same URL, or a child colliding with another page, fail the build through the engine's normal URL-collision detection — there is no tree-local check.</li>
+<li>In the <a href="docs/concepts/build-pipeline/">site manifest</a>, every page of a tree lists the shared source artifact as its <code>source_path</code>.</li>
+</ul>
 <h2>Error Positions</h2>
 <p>Return a <code>core.ParseError</code> to point build errors at a source line:</p>
 <pre><code class="language-go">return nil, nil, &amp;core.ParseError{
@@ -136,7 +182,14 @@ eng.Run(os.Args)
 <li><strong>Compiled</strong> (registered via <code>eng.Register()</code>) — wins</li>
 <li><strong>Declarative</strong> (defined in <code>config.yaml</code>)</li>
 </ol>
-<p>A file is discovered as content only if a registered parser matches its extension or filename.</p>
+<p>A file is discovered as content only if a registered parser <strong>claims</strong> it, and the same claim decides which parser parses it. Claims are resolved by specificity:</p>
+<ol>
+<li><strong>Filename patterns beat bare extensions</strong> — <code>guide.adr.md</code> goes to the parser claiming <code>*.adr.md</code>, not to the <code>md</code> parser.</li>
+<li><strong>The longest matching pattern wins</strong> — <code>*.adr.md</code> beats <code>*.md</code>.</li>
+<li><strong>Equal-length ties resolve by parser precedence</strong> — compiled parsers above declarative ones.</li>
+</ol>
+<p>If no pattern matches, the bare extension is looked up; if nothing claims the file, it is copied as a static asset.</p>
+<p>A parser claims by exactly one kind: if it declares filename patterns (<code>FilenameParser</code>), those patterns are its <strong>complete</strong> claim set — its <code>Type()</code> is not implicitly claimed as an extension. A parser without patterns claims its <code>Type()</code> as a bare extension.</p>
 <h2>Markdown (opt-in)</h2>
 <p>Markdown is a first-party, opt-in parser — not a built-in. Register it like any other compiled parser:</p>
 <pre><code class="language-go">import &quot;github.com/gofuego/fuego/parsers/markdown&quot;
@@ -144,6 +197,11 @@ eng.Run(os.Args)
 eng.Register(markdown.Parser())
 </code></pre>
 <p>It uses goldmark with GitHub-Flavored Markdown (tables, strikethrough, autolinks, task lists) and emits a single node with <code>Raw: true</code> containing the rendered HTML.</p>
+<p>By default it claims the bare <code>md</code> extension. For a repo whose markdown files don't match — or to claim only specific files — override the claim with <code>markdown.WithPatterns(...)</code>; the patterns replace the default claim entirely:</p>
+<pre><code class="language-go">eng.Register(markdown.Parser(markdown.WithPatterns(&quot;*.markdown&quot;)))
+eng.Register(markdown.Parser(markdown.WithPatterns(&quot;README.md&quot;))) // only README.md
+</code></pre>
+<p>The parser's full output contract (claims, envelope keys, node types) is documented in <a href="https://github.com/gofuego/fuego/blob/develop/parsers/markdown/schema.md"><code>parsers/markdown/schema.md</code></a>, following the fuego-formats schema convention.</p>
 
 </article>
 
