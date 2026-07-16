@@ -94,14 +94,14 @@ Every Fuego site has the same layout:
 
 - **config.yaml** — site metadata, parser definitions, routes, taxonomies, collections, packs
 - **main.go** — Go entry point. Register parsers, install packs (`eng.Use`), and add hooks here
-- **content/** — your content files (any extension matched by a parser)
+- **content/** — your content files (anything claimed by a registered parser, by extension or filename pattern)
 - **theme/** — HTML templates: `base.html`, `layouts/`, `renderers/`, `partials/`, and `outputs/`
 - **public/** — static assets copied to the output root
 - **build/** — generated output (gitignored)
 
 ## Content Files
 
-Every content file uses YAML frontmatter:
+Most content formats use YAML frontmatter:
 
 ```
 ---
@@ -113,7 +113,7 @@ tags:
 Your content here, in whatever format the parser expects.
 ```
 
-The frontmatter becomes the page envelope (accessible in templates as `.Page.Envelope`). Everything below `---` is the raw payload passed to the parser matching the file extension.
+The frontmatter becomes the page envelope (accessible in templates as `.Page.Envelope`). Everything below `---` is the raw payload the claiming parser turns into nodes. (Envelope extraction is the parser's job — frontmatter is how the first-party parsers do it, not an engine requirement.)
 
 ## Deployment
 

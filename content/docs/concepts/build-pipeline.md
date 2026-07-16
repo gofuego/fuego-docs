@@ -16,7 +16,7 @@ Every Fuego command runs the same pipeline. Understanding the phases helps you p
 PREBUILD       →  shell hook (npm, tailwind, etc.)
 INIT           →  merge declarative + compiled parsers
 DISCOVER       →  walk content dir, apply ignore patterns
-PARSE          →  split frontmatter, run parsers (concurrent)
+PARSE          →  run parsers: envelope + AST (concurrent)
   ↓ AfterParse hooks
 ROUTE          →  resolve URLs, detect collisions
 INDEX          →  build taxonomies + collections, paginate
@@ -47,7 +47,7 @@ If two parsers target the same file extension, the higher-priority one wins. Mar
 
 Walks the `content/` directory and classifies each file:
 
-- **Content files** — matched to a parser by extension (`.md`, `.trivia`, `.card`, etc.)
+- **Content files** — claimed by a registered parser, by filename pattern (`Dockerfile`, `*.adr.md`) or bare extension (`.md`, `.trivia`, `.card`). Patterns are checked before extensions and the most specific claim wins, so `guide.adr.md` belongs to the parser claiming `*.adr.md`, not the `md` parser.
 - **Binary assets** — images, fonts, etc. — copied to output alongside their routed content
 - **Ignored files** — matched by `ignore` glob patterns in config
 
@@ -55,9 +55,10 @@ Walks the `content/` directory and classifies each file:
 
 For each content file, in parallel:
 
-1. Split the file at `---` delimiters to extract YAML frontmatter (the envelope) and the raw payload
-2. Dispatch the payload to the matching parser
-3. The parser returns `[]Node` — the universal AST
+1. Dispatch the raw file to the parser that claimed it at DISCOVER
+2. The parser returns the envelope (metadata) and `[]Node` — the universal AST. Envelope extraction is the parser's job: YAML frontmatter is one option (`core.WithYAMLFrontmatter`), not a requirement
+
+A parser that also implements `core.TreeParser` expands one file into a **tree of real pages**: the engine calls `ParseTree` instead of `Parse` and turns the returned root plus children into an index page and one page per child, each with its own envelope — so a single OpenAPI spec or database schema becomes a whole routed section. See [Custom Parsers](docs/custom-parsers/).
 
 Concurrency is bounded by `runtime.NumCPU()` via `errgroup`.
 
@@ -69,6 +70,8 @@ Assigns a URL to each page using three-tier priority:
 2. Config `routes[type]` pattern — pattern expansion with `{dir}`, `{slug}`, `{filename}`
 3. Filesystem mirror — the default. An `index` file routes to its directory's
    root: `content/index.md` → `/`, `content/blog/index.md` → `/blog/`.
+
+Pages expanded from a tree parser are routed in a second pass: the root goes through the three tiers as normal, then each child's URL is the root's resolved URL joined with the child's slug-path segments.
 
 After resolution, checks for URL collisions. A collision is a `GlobalFatal` error that stops the build.
 
@@ -99,7 +102,7 @@ Renders every file under `theme/outputs/` as a text template fed with `.Site`, w
 
 ### MANIFEST
 
-Writes `site-manifest.json` — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its `url`, `type`, `layout`, `title`, `summary`, `output_path` (the generated file, e.g. `blog/post/index.html`), `source_path` (the source file relative to the content directory — *omitted* for virtual pages, which are non-editable), and the flattened `envelope`; the top-level `content_root` is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.
+Writes `site-manifest.json` — a JSON index of all pages, taxonomy terms, and collection membership. Each page entry records its `url`, `type`, `layout`, `title`, `summary`, `output_path` (the generated file, e.g. `blog/post/index.html`), `source_path` (the source file relative to the content directory — *omitted* for virtual pages, which are non-editable), and the flattened `envelope`. Pages expanded from a tree-parsed artifact all list the shared artifact as their `source_path`, so several entries may map to one source file — root and children stay distinguishable by `url`/`output_path`; the top-level `content_root` is the content directory relative to the repository root. This is useful for client-side search and navigation, and for mapping a served URL back to the source file it was built from — what an external host or in-place editor needs.
 
 ### STATIC
 
@@ -118,6 +121,6 @@ The cache is keyed by a header — a hash of the **engine binary**, the **resolv
 - If the header matches, content files whose hash is unchanged skip PARSE and are restored from cache; changed and new files are parsed normally; deleted files have their output removed (orphan cleanup via a manifest-style diff).
 - If the header doesn't match — you rebuilt the engine, edited `config.yaml`, or touched a template — the whole cache is discarded and the build falls back to a full, clean rebuild.
 
-ROUTE and INDEX always run over the full page set (they are cheap, `O(pages)` map work). RENDER is **narrowed** to the pages whose output can actually differ: the changed/new pages, every virtual page (taxonomy, collection, pagination — they aggregate content), and any page whose template reads `.Site.Pages` directly or through a partial. Pages with a site-blind layout that didn't change keep their existing HTML. On a 10k-page site, a single-file edit rebuilds in a fraction of a full build.
+ROUTE and INDEX always run over the full page set (they are cheap, `O(pages)` map work). RENDER is **narrowed** to the pages whose output can actually differ: the changed/new pages, every page expanded from a changed tree-parsed artifact, every virtual page (taxonomy, collection, pagination — they aggregate content), and any page whose template reads `.Site.Pages` directly or through a partial. Pages with a site-blind layout that didn't change keep their existing HTML. On a 10k-page site, a single-file edit rebuilds in a fraction of a full build.
 
 Despite the narrowing, an incremental build produces **byte-identical output to a clean build** of the same inputs. That guarantee is enforced in CI: every fixture is built clean and then incrementally under each mutation (edit, add, delete, theme touch, config touch) and the output trees are compared byte-for-byte. A corrupt or version-mismatched cache is treated as a miss, never an error.
