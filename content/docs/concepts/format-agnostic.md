@@ -51,7 +51,7 @@ This uniformity means the entire pipeline after PARSE is format-agnostic. Routin
 
 Format-agnostic doesn't mean anti-Markdown. Fuego ships a first-party Markdown parser with full GFM support (tables, strikethrough, autolinks, task lists) — you opt in by registering it (`eng.Register(markdown.Parser())`), the same way you'd register any parser. It emits a single `Raw: true` node that the renderer passes through as HTML.
 
-You can even mix formats in the same site: Markdown for blog posts, `.trivia` for quiz pages, `.card` for flashcards. Each file extension dispatches to its own parser, and the pipeline handles the rest.
+You can even mix formats in the same site: Markdown for blog posts, `.trivia` for quiz pages, `.card` for flashcards. Each file dispatches to the parser that claims it — by filename pattern or bare extension, most specific claim first — and the pipeline handles the rest.
 
 ## When This Matters
 

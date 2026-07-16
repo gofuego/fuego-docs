@@ -88,7 +88,28 @@ Scaffold a new Fuego project.
 fuego init mysite
 ```
 
-Creates a working project with a `.card` flashcard DSL, theme, and sample content.
+Creates a working project with Markdown registered, a `.card` flashcard DSL,
+theme, and sample content.
+
+**Pick the format parsers** with `--formats` (the list is the exact set):
+
+```bash
+fuego init mysite --formats markdown,mermaid,openapi
+```
+
+Short names resolve by convention to the
+[fuego-formats](https://github.com/gofuego/fuego-formats) modules (`mermaid`,
+`openapi`, `dbml`, `playwright`, `docker`, `kubernetes`, `adr`, …); `markdown`
+resolves to the engine's first-party parser; a full package path installs a
+third-party format. The convention is that a format package exports
+`Parser(opts ...Option) core.Parser`.
+
+Init pins each module in `go.mod`, registers the parsers in a generated
+`formats.go` (`main.go` calls `registerFormats(eng)` once), and materializes
+each format's **contract** — its `schema.md` and golden fixtures — into
+`docs/formats/`, indexed from the scaffolded CLAUDE.md. That gives a coding
+agent working on your theme the exact node types and envelope keys each parser
+emits, locally, at the pinned version.
 
 **Start from a format pack** with `--pack`:
 
@@ -101,7 +122,29 @@ This scaffolds the project, wires the pack into `main.go`
 that a pack module's package exports a `Pack() core.Pack` function; the package
 name defaults to the module path's last segment. If the package name differs,
 pass `--pack-symbol <name>`. Init never compiles or runs the pack — it only
-downloads it — so installing a pack can't execute third-party code.
+downloads it — so installing a pack can't execute third-party code. (A pack
+bundles parsers *plus* a theme and hooks; `--formats` installs bare parsers
+you theme yourself. The two compose.)
+
+### formats
+
+Manage a project's format modules — run inside the project (also available as
+`go run . formats ...`):
+
+```bash
+fuego formats add dbml        # install a format: dependency + registration + docs
+fuego formats add github.com/acme/fuego-terraform --symbol terraform
+fuego formats sync            # refresh docs/formats/ from the pinned versions
+```
+
+`add` resolves the name like `--formats` does, adds the module to `go.mod`,
+regenerates `formats.go` (a file the CLI owns — hand edits are overwritten),
+and materializes the format's contract under `docs/formats/<name>/` without
+touching any other file. On a project without a generated `formats.go` it
+materializes the docs and prints the import + `eng.Register(...)` lines to add
+manually — it never rewrites your code. `sync` re-copies every installed
+format's docs from the versions `go.mod` pins; run it after upgrading a
+module.
 
 ## Global Flags
 
