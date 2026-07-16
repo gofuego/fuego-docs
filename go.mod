@@ -3,7 +3,7 @@ module github.com/gofuego/fuego-docs
 go 1.25.0
 
 require (
-	github.com/gofuego/fuego v0.4.7
+	github.com/gofuego/fuego v0.6.0
 	github.com/gofuego/fuego-doctheme v0.2.0
 )
 
