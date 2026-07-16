@@ -134,13 +134,13 @@ fuego build
 <ul>
 <li><strong>config.yaml</strong> — site metadata, parser definitions, routes, taxonomies, collections, packs</li>
 <li><strong>main.go</strong> — Go entry point. Register parsers, install packs (<code>eng.Use</code>), and add hooks here</li>
-<li><strong>content/</strong> — your content files (any extension matched by a parser)</li>
+<li><strong>content/</strong> — your content files (anything claimed by a registered parser, by extension or filename pattern)</li>
 <li><strong>theme/</strong> — HTML templates: <code>base.html</code>, <code>layouts/</code>, <code>renderers/</code>, <code>partials/</code>, and <code>outputs/</code></li>
 <li><strong>public/</strong> — static assets copied to the output root</li>
 <li><strong>build/</strong> — generated output (gitignored)</li>
 </ul>
 <h2>Content Files</h2>
-<p>Every content file uses YAML frontmatter:</p>
+<p>Most content formats use YAML frontmatter:</p>
 <pre><code>---
 title: My Page
 layout: card
@@ -149,7 +149,7 @@ tags:
 ---
 Your content here, in whatever format the parser expects.
 </code></pre>
-<p>The frontmatter becomes the page envelope (accessible in templates as <code>.Page.Envelope</code>). Everything below <code>---</code> is the raw payload passed to the parser matching the file extension.</p>
+<p>The frontmatter becomes the page envelope (accessible in templates as <code>.Page.Envelope</code>). Everything below <code>---</code> is the raw payload the claiming parser turns into nodes. (Envelope extraction is the parser's job — frontmatter is how the first-party parsers do it, not an engine requirement.)</p>
 <h2>Deployment</h2>
 <p>Set <code>base_url</code> in <code>config.yaml</code> to your deploy path:</p>
 <ul>
