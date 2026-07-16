@@ -26,15 +26,16 @@
     
 <section class="hero">
     <h1>The meta-engine for static sites</h1>
-    <p>Most static site generators bake in Markdown. <strong>Fuego lets you define the format</strong> — <code>.trivia</code>, <code>.card</code>, <code>.recipe</code>, anything — then use it to build a site, or package it as a <strong>pack</strong> the next person installs with one line.</p>
-<pre><code class="language-bash">go run github.com/gofuego/fuego/cmd/fuego@latest init mysite
+    <p>Most static site generators bake in Markdown. Fuego is <strong>format-agnostic</strong>: a parser turns <em>any</em> file into pages, and the engine handles the rest — discovery, routing, taxonomies, pagination, feeds, and a dev server.</p>
+<p>Your repo is already full of precise, machine-readable artifacts: OpenAPI specs, database schemas, test suites, diagrams, Kubernetes manifests, decision records. Pick the matching <a href="https://github.com/gofuego/fuego-formats">format modules</a> and Fuego renders them as one navigable site. A rich artifact doesn't become a page — it becomes a whole <strong>section</strong>: an API spec expands into an index plus a routed page per tag, operation, and schema, visible to your taxonomies and stable in its URLs.</p>
+<pre><code class="language-bash">go run github.com/gofuego/fuego/cmd/fuego@latest init mysite --formats markdown,openapi,dbml,mermaid
 cd mysite &amp;&amp; go run . serve
 </code></pre>
-<p>Discovery, routing, taxonomies, pagination, feeds, a dev server — Fuego handles the infrastructure every generator needs. You bring the format. Markdown is a first-party parser you opt into; no format is privileged. This very site is built with Fuego.</p>
+<p>Every installed format's <strong>contract</strong> — exactly what its parser emits — is materialized into your project, so you (or the coding agent you hand the theme to) build against it without reading parser source. Markdown is a first-party parser you opt into, and when no module fits, a custom parser or <a href="docs/concepts/format-packs/">format pack</a> is one small interface away. This very site is built with Fuego.</p>
 
     <div class="cta">
         <a class="btn" href="/gofuego/fuego-docs/docs/getting-started/">Get started</a>
-        <a class="btn btn-ghost" href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Build a format pack</a>
+        <a class="btn btn-ghost" href="/gofuego/fuego-docs/docs/custom-parsers/">Bring your own format</a>
     </div>
 </section>
 
