@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/fuego-docs/">
-    <title>Check for Broken Links — Fuego</title>
+    <title>Two Modes of Use — Fuego</title>
     <link rel="stylesheet" href="style.css">
     <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
 </head>
@@ -33,7 +33,7 @@
     <div class="nav-group">
         <p class="nav-heading">Concepts</p>
         <ul>
-            <li><a href="/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/fuego-docs/docs/concepts/two-modes/" class="current">Two Modes of Use</a></li>
             <li><a href="/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
             <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
             <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
@@ -58,7 +58,7 @@
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
-            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/" class="current">Check for Broken Links</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -88,45 +88,81 @@
     <main>
     
 <article class="doc">
-    <h1>Check for Broken Links</h1>
-    <p>Fuego can validate every internal link in your built site and fail the build on a
-broken one. Because Fuego doesn't rewrite links for you (see <a href="docs/templates/#linking">Linking</a>),
-this is the safety net that catches links pointing at the wrong place.</p>
-<h2>Run the checker</h2>
-<pre><code class="language-bash">fuego build --check-links      # report broken internal links (build still succeeds)
-fuego build --strict-links     # fail the build on a broken internal link
+    <h1>Two Modes of Use</h1>
+    <p>Fuego is a render-engine <strong>framework</strong>: the pipeline — discovery, parsing,
+routing, taxonomies, rendering — is fixed, and you decide where the engine
+lives. In practice every Fuego deployment is one of two shapes.</p>
+<h2>Mode 1 — a site configured in place</h2>
+<p>The classic static-site shape: a project directory owns its content and drives
+the engine directly.</p>
+<pre><code>mysite/
+  config.yaml      # routes, taxonomies, collections, parsers
+  main.go          # registers parsers, packs, hooks
+  content/         # the content, written for this site
+  theme/           # templates
 </code></pre>
-<p><code>--check-links</code> reports; <code>--strict-links</code> turns each broken link into a build
-failure (and implies <code>--check-links</code>). A report names the <strong>source file</strong>, the
-link as written, and where it resolved:</p>
-<pre><code>[LINKS] error docs/guide.md: broken link &quot;/docs/setup/&quot; resolves to /docs/setup, which is not a generated page
+<p><code>fuego init</code> scaffolds this shape (<a href="docs/getting-started/">Getting Started</a>):
+<code>config.yaml</code> carries the declarative concerns, <code>main.go</code> the code-level ones,
+and <code>fuego build</code> writes the site to <code>build/</code>. Pick
+<a href="https://github.com/gofuego/fuego-formats">format modules</a> at scaffold time
+with <code>--formats</code>, or start from a <a href="docs/concepts/format-packs/">format pack</a>
+with <code>--pack</code>.</p>
+<p><strong>When it fits:</strong> docs sites, blogs, any site whose content is written <em>for</em>
+the site. This site is mode 1 — content in <code>content/</code>, theme from
+<a href="https://github.com/gofuego/fuego-doctheme">fuego-doctheme</a>.</p>
+<h2>Mode 2 — a compiled, specialized engine</h2>
+<p>Invert the ownership: the content is an existing repository that knows nothing
+about Fuego. You model the repo's artifacts — which files matter, what
+structure they carry, how they should render — as a
+<a href="docs/concepts/format-packs/">format pack</a>, wrap it in a thin CLI, and point
+the compiled binary at the repo:</p>
+<pre><code class="language-bash">fuego-systheme -site-name &quot;My System&quot; /path/to/repo build
 </code></pre>
-<h2>Run it with your real base URL</h2>
-<p>The checker resolves each <code>&lt;a href&gt;</code> exactly as a browser would — against the
-page's <code>&lt;base href&gt;</code> and the site <code>base_url</code> — and checks that the target exists.
-So run it with the <strong>base URL you actually deploy under</strong>, or it can't catch links
-that escape the deploy subpath:</p>
-<pre><code class="language-bash">fuego build --base-url /my-repo --strict-links
-</code></pre>
-<p>A link like <code>/docs/setup/</code> resolves fine at the root but escapes <code>/my-repo</code> once
-deployed — only a check at the real base URL catches it.</p>
-<h2>What it checks (and doesn't)</h2>
-<ul>
-<li><strong>Checks</strong> every <code>&lt;a href&gt;</code> in the rendered HTML — from content <em>and</em> templates
-— resolving relative and absolute paths through <code>&lt;base href&gt;</code>, and verifies the
-target is a generated page or asset.</li>
-<li><strong>Skips</strong> external links (anything with a scheme, or protocol-relative <code>//…</code>),
-<code>#fragments</code>, and anchor existence.</li>
-</ul>
-<p>It runs after the output is written, so it sees the final HTML as shipped. It is
-opt-in: a plain <code>fuego build</code> does no link checking and pays no cost for it.</p>
-<h2>Wire it into CI</h2>
-<p>Fail a deploy before it ships a dead link:</p>
-<pre><code class="language-yaml">- run: go run . build --base-url /my-repo --strict-links
-</code></pre>
-<p>This also catches the pull requests an in-place editor (like fuego-studio) opens,
-so a typo'd link never reaches your published site. See
-<a href="docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a>.</p>
+<p>The engine treats the repository as its content directory and writes the site
+somewhere else. Nothing in the repo changes — no config file, no theme
+directory, no cache, no generated content. Because the repo's own artifacts
+are the only input, the rendered site can never drift from them: re-render on
+push and it reflects exactly what's committed.</p>
+<p><a href="docs/concepts/specialized-engine/">The Specialized Engine</a> covers the pattern
+in depth; the <a href="docs/ecosystem/">ecosystem page</a> lists the shipped specialized
+engines — decision records, infrastructure, Claude Code workspaces, whole
+systems — each with a live demo.</p>
+<h2>Same engine, same skills</h2>
+<p>Both modes run the same pipeline with the same parsers, themes, hooks, and
+config semantics — a pack built for an in-place site becomes a specialized
+engine by adding a small CLI over the
+<a href="docs/concepts/embedding/">programmatic API</a>. Choose per project:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>In-place site</th>
+<th>Specialized engine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Content</td>
+<td>written for the site</td>
+<td>already in the repo</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td><code>config.yaml</code> in the project</td>
+<td>compiled in (pack defaults + CLI flags)</td>
+</tr>
+<tr>
+<td>Who runs it</td>
+<td>the site's own <code>main.go</code></td>
+<td>anyone, on any matching repo</td>
+</tr>
+<tr>
+<td>Repo footprint</td>
+<td>the project owns its repo</td>
+<td>zero — non-invasive</td>
+</tr>
+</tbody>
+</table>
 
 </article>
 

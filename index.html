@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/fuego-docs/">
-    <title>The meta-engine for static sites — Fuego</title>
+    <title>The non-invasive render engine framework — Fuego</title>
     <link rel="stylesheet" href="style.css">
     <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
 </head>
@@ -25,17 +25,18 @@
     <main>
     
 <section class="hero">
-    <h1>The meta-engine for static sites</h1>
-    <p>Most static site generators bake in Markdown. Fuego is <strong>format-agnostic</strong>: a parser turns <em>any</em> file into pages, and the engine handles the rest — discovery, routing, taxonomies, pagination, feeds, and a dev server.</p>
-<p>Your repo is already full of precise, machine-readable artifacts: OpenAPI specs, database schemas, test suites, diagrams, Kubernetes manifests, decision records. Pick the matching <a href="https://github.com/gofuego/fuego-formats">format modules</a> and Fuego renders them as one navigable site. A rich artifact doesn't become a page — it becomes a whole <strong>section</strong>: an API spec expands into an index plus a routed page per tag, operation, and schema, visible to your taxonomies and stable in its URLs.</p>
+    <h1>The non-invasive render engine framework</h1>
+    <p>Your repo is already full of precise, machine-readable artifacts: OpenAPI specs, database schemas, test suites, diagrams, Kubernetes manifests, decision records. Fuego renders them as one navigable site — and a rich artifact doesn't become a page, it becomes a whole <strong>section</strong>: an API spec expands into an index plus a routed page per tag, operation, and schema, visible to your taxonomies and stable in its URLs.</p>
+<p>There are <a href="docs/concepts/two-modes/">two ways to use it</a>. <strong>Configure a site in place</strong>: scaffold a project, pick the matching <a href="https://github.com/gofuego/fuego-formats">format modules</a>, add content and a theme, and drive the engine directly:</p>
 <pre><code class="language-bash">go run github.com/gofuego/fuego/cmd/fuego@latest init mysite --formats markdown,openapi,dbml,mermaid
 cd mysite &amp;&amp; go run . serve
 </code></pre>
-<p>Every installed format's <strong>contract</strong> — exactly what its parser emits — is materialized into your project, so you (or the coding agent you hand the theme to) build against it without reading parser source. Markdown is a first-party parser you opt into, and when no module fits, a custom parser or <a href="docs/concepts/format-packs/">format pack</a> is one small interface away. This very site is built with Fuego.</p>
+<p>Or <strong>compile a <a href="docs/concepts/specialized-engine/">specialized engine</a></strong>: model a repo's structure and artifacts as a <a href="docs/concepts/format-packs/">format pack</a>, and ship a purpose-built binary that renders <em>any</em> matching repository <strong>non-invasively</strong> — nothing written into the target repo, always up to date because the committed artifacts are the only input. See it live: <a href="https://gofuego.github.io/demo-fuego-systheme/">an application repo rendered by fuego-systheme</a>, one of the <a href="docs/ecosystem/">ecosystem's</a> theme-and-demo pairs.</p>
+<p>Either way, every installed format's <strong>contract</strong> — exactly what its parser emits — is materialized into your project, so you (or the coding agent you hand the theme to) build against it without reading parser source. No format is privileged: Markdown is a first-party parser you opt into, and when no module fits, a custom parser or pack is one small interface away. This very site is built with Fuego.</p>
 
     <div class="cta">
         <a class="btn" href="/fuego-docs/docs/getting-started/">Get started</a>
-        <a class="btn btn-ghost" href="/fuego-docs/docs/custom-parsers/">Bring your own format</a>
+        <a class="btn btn-ghost" href="/fuego-docs/docs/ecosystem/">Explore the ecosystem</a>
     </div>
 </section>
 

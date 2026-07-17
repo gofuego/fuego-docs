@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/fuego-docs/">
-    <title>Check for Broken Links — Fuego</title>
+    <title>Tags: ecosystem — Fuego</title>
     <link rel="stylesheet" href="style.css">
     <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
 </head>
@@ -58,7 +58,7 @@
             <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
             <li><a href="/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
-            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/" class="current">Check for Broken Links</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
         </ul>
     </div>
     
@@ -88,46 +88,11 @@
     <main>
     
 <article class="doc">
-    <h1>Check for Broken Links</h1>
-    <p>Fuego can validate every internal link in your built site and fail the build on a
-broken one. Because Fuego doesn't rewrite links for you (see <a href="docs/templates/#linking">Linking</a>),
-this is the safety net that catches links pointing at the wrong place.</p>
-<h2>Run the checker</h2>
-<pre><code class="language-bash">fuego build --check-links      # report broken internal links (build still succeeds)
-fuego build --strict-links     # fail the build on a broken internal link
-</code></pre>
-<p><code>--check-links</code> reports; <code>--strict-links</code> turns each broken link into a build
-failure (and implies <code>--check-links</code>). A report names the <strong>source file</strong>, the
-link as written, and where it resolved:</p>
-<pre><code>[LINKS] error docs/guide.md: broken link &quot;/docs/setup/&quot; resolves to /docs/setup, which is not a generated page
-</code></pre>
-<h2>Run it with your real base URL</h2>
-<p>The checker resolves each <code>&lt;a href&gt;</code> exactly as a browser would — against the
-page's <code>&lt;base href&gt;</code> and the site <code>base_url</code> — and checks that the target exists.
-So run it with the <strong>base URL you actually deploy under</strong>, or it can't catch links
-that escape the deploy subpath:</p>
-<pre><code class="language-bash">fuego build --base-url /my-repo --strict-links
-</code></pre>
-<p>A link like <code>/docs/setup/</code> resolves fine at the root but escapes <code>/my-repo</code> once
-deployed — only a check at the real base URL catches it.</p>
-<h2>What it checks (and doesn't)</h2>
-<ul>
-<li><strong>Checks</strong> every <code>&lt;a href&gt;</code> in the rendered HTML — from content <em>and</em> templates
-— resolving relative and absolute paths through <code>&lt;base href&gt;</code>, and verifies the
-target is a generated page or asset.</li>
-<li><strong>Skips</strong> external links (anything with a scheme, or protocol-relative <code>//…</code>),
-<code>#fragments</code>, and anchor existence.</li>
-</ul>
-<p>It runs after the output is written, so it sees the final HTML as shipped. It is
-opt-in: a plain <code>fuego build</code> does no link checking and pays no cost for it.</p>
-<h2>Wire it into CI</h2>
-<p>Fail a deploy before it ships a dead link:</p>
-<pre><code class="language-yaml">- run: go run . build --base-url /my-repo --strict-links
-</code></pre>
-<p>This also catches the pull requests an in-place editor (like fuego-studio) opens,
-so a typo'd link never reaches your published site. See
-<a href="docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a>.</p>
+    <h1>Tags: ecosystem</h1>
+    <ul class="page-list">
+    <li class="page-ref"><a href="docs/ecosystem/">Themes, Packs &amp; Demos</a></li>
 
+    </ul>
 </article>
 
     </main>

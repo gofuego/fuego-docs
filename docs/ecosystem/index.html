@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Themes, Packs &amp; Demos — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="." class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Ecosystem</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/ecosystem/" class="current">Themes, Packs &amp; Demos</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/render-a-repos-artifacts/">Tutorial: Render a Repo&#39;s Artifacts</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Themes, Packs &amp; Demos</h1>
+    <p>Everything here is built on the engine this site documents. Each tool ships as
+an importable <a href="docs/concepts/format-packs/">format pack</a> plus a thin CLI — a
+<a href="docs/concepts/specialized-engine/">specialized engine</a> you can point at a
+matching repo. And each has a <strong>live demo</strong> rendered from the repos of a
+fictional company, <em>Acme Parcel</em>, so you can judge the output before
+installing anything: the four demos are four repos of the same company — its
+platform decisions, its infrastructure, its agent workspace, and one of its
+applications.</p>
+<h2>fuego-systheme — render a whole system</h2>
+<p>Point it at a repository and it renders the engineering artifacts the repo
+already contains — OpenAPI, DBML, Playwright, Dockerfiles, Kubernetes
+manifests, ADRs, Mermaid, Markdown — as one site that reads like the repo
+itself: file-tree sidebar, an orienting landing page, the OpenAPI index shaped
+like the yaml, the DBML schema drawn as an ERD. Registers every
+<a href="https://github.com/gofuego/fuego-formats">fuego-formats</a> parser at once;
+nothing is written into the repository.
+<a href="https://github.com/gofuego/fuego-systheme">Repo</a> ·
+<a href="https://github.com/gofuego/demo-fuego-systheme">demo repo</a> (the &quot;Dispatch AI&quot;
+application — Go backend, TS frontend, e2e specs, manifests, ADRs, diagrams) ·
+<strong><a href="https://gofuego.github.io/demo-fuego-systheme/">live site</a></strong></p>
+<h2>fuego-adr — decision records</h2>
+<p>Write decisions as <code>*.adr.md</code> files, point <code>fuego-adr</code> at the folder, and get
+a status dashboard, a chronological timeline, a per-file &quot;what decisions
+touched this?&quot; index, tag pages, and a page per decision — with section
+completeness and supersession links validated for you.
+<a href="https://github.com/gofuego/fuego-adr">Repo</a> ·
+<a href="https://github.com/gofuego/demo-fuego-adr">demo repo</a> (nine records
+exercising every status, including a mutual-supersession pair) ·
+<strong><a href="https://gofuego.github.io/demo-fuego-adr/">live site</a></strong></p>
+<h2>fuego-devops — infrastructure</h2>
+<p>Scans a repo for Dockerfiles and Kubernetes manifests — Kustomize- and
+Helm-aware, so overlays and charts are documented as they would actually be
+applied — and produces a per-namespace overview, an architecture diagram, and
+a page per resource. Zero config, nothing written back.
+<a href="https://github.com/gofuego/fuego-devops">Repo</a> ·
+<a href="https://github.com/gofuego/demo-fuego-devops">demo repo</a> (multi-stage builds,
+Kustomize overlays, a Helm chart) ·
+<strong><a href="https://gofuego.github.io/demo-fuego-devops/">live site</a></strong></p>
+<h2>fuego-dotclaude — Claude Code workspaces</h2>
+<p>Renders a <code>.claude/</code> directory — agents, skills, commands, output styles,
+memory, MCP/settings config, installed plugins — as a navigable site with
+whole-word cross-links between artifacts, backlinks, and faceted taxonomies.
+<a href="https://github.com/gofuego/fuego-dotclaude">Repo</a> ·
+<a href="https://gofuego.github.io/fuego-dotclaude/">its docs</a> ·
+<a href="https://github.com/gofuego/demo-fuego-dotclaude">demo repo</a> ·
+<strong><a href="https://gofuego.github.io/demo-fuego-dotclaude/">live site</a></strong></p>
+<h2>fuego-doctheme — the documentation theme</h2>
+<p>The shared look of the Fuego documentation sites, packaged as two packs:
+<code>Public()</code> (user-facing docs — hero home, CTA buttons) and <code>Blueprint()</code>
+(muted maintainer docs). Dogfooded in <a href="docs/concepts/two-modes/">mode 1</a>: the
+site you are reading uses <code>Public()</code> and supplies only its topbar, sidebar,
+and content.
+<a href="https://github.com/gofuego/fuego-doctheme">Repo</a></p>
+<h2>fuego-formats — the parser library</h2>
+<p>Not a theme but the substrate: one independently-versioned Go module per
+format (OpenAPI, DBML, Mermaid, Playwright, Dockerfile, Kubernetes, ADR),
+parsers only. Each ships its <strong>contract</strong> — a <code>schema.md</code> plus golden fixtures
+stating exactly what the parser emits — which
+<a href="docs/cli/#init"><code>fuego init --formats</code></a> materializes into your project and
+fuego-systheme's renderers are written against.
+<a href="https://github.com/gofuego/fuego-formats">Repo</a></p>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

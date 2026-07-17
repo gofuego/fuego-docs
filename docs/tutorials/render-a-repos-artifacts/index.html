@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fuego-docs/">
+    <title>Tutorial: Render a Repo&#39;s Artifacts — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="." class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Ecosystem</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/ecosystem/">Themes, Packs &amp; Demos</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
+            <li><a href="/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/render-a-repos-artifacts/" class="current">Tutorial: Render a Repo&#39;s Artifacts</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>Tutorial: Render a Repo&#39;s Artifacts</h1>
+    <p>Your repository already contains precise, machine-readable artifacts — an
+OpenAPI spec, a database schema, decision records, test suites, manifests,
+diagrams. This tutorial turns them into a navigable site two ways: the
+instant way (a ready-made <a href="docs/concepts/specialized-engine/">specialized engine</a>)
+and the owned way (your own project with the matching format modules).</p>
+<h2>The instant way: fuego-systheme</h2>
+<p>If the artifacts follow common naming — <code>*.openapi.yaml</code>, <code>*.dbml</code>,
+<code>Dockerfile</code>, <code>*.k8s.yaml</code>, <code>*.adr.md</code>, <code>*.mmd</code>, <code>*.spec.ts</code>, <code>*.md</code> —
+<a href="https://github.com/gofuego/fuego-systheme">fuego-systheme</a> renders them with
+no configuration at all:</p>
+<pre><code class="language-bash">go run github.com/gofuego/fuego-systheme/cmd/fuego-systheme@latest \
+  -site-name &quot;My System&quot; /path/to/repo serve
+</code></pre>
+<p>Open the dev server and you get a dashboard counting every artifact family, a
+file-tree sidebar on every page, the OpenAPI spec expanded into an API section
+(index plus a page per tag, operation, and schema), the DBML schema drawn as
+an ERD, decisions on a status board — and <strong>nothing written into the repo</strong>:
+no config, no theme, no cache.</p>
+<p>For CI, build with a deploy subpath and strict link checking:</p>
+<pre><code class="language-bash">go run github.com/gofuego/fuego-systheme/cmd/fuego-systheme@latest \
+  -site-name &quot;My System&quot; -base-url /my-repo -strict-links -output build . build
+</code></pre>
+<p>No repo handy? Clone
+<a href="https://github.com/gofuego/demo-fuego-systheme">demo-fuego-systheme</a> — an
+application repo exercising every format at once — and run the command
+against it; the result is deployed at
+<a href="https://gofuego.github.io/demo-fuego-systheme/">gofuego.github.io/demo-fuego-systheme</a>.</p>
+<h2>The owned way: your own project</h2>
+<p>When you want your own theme, routes, and taxonomies, scaffold a project with
+the <a href="https://github.com/gofuego/fuego-formats">format modules</a> that match your
+artifacts:</p>
+<pre><code class="language-bash">fuego init mysite --formats markdown,openapi,dbml
+cd mysite
+</code></pre>
+<p><code>init</code> registers each format's parsers in the generated <code>formats.go</code> and
+materializes each format's <strong>contract</strong> — <code>schema.md</code> plus golden fixtures,
+exactly what the parser emits — under <code>docs/formats/</code>.</p>
+<p>Bring the artifacts in: copy them under <code>content/</code>, or point <code>dirs.content</code>
+at the folder that already holds them
+(<a href="docs/configuration/">Configuration</a>).</p>
+<pre><code class="language-bash">cp ../api/dispatch.openapi.yaml content/
+go run . serve
+</code></pre>
+<p>The spec doesn't become one page — it becomes a whole <strong>section</strong>: an index
+plus a routed page per tag, operation, and schema, visible to your taxonomies
+and stable in its URLs (see tree parsers in
+<a href="docs/custom-parsers/">Custom Parsers</a>). Style it by adding
+<code>theme/renderers/</code> and <code>theme/layouts/</code> templates written against the
+contract in <code>docs/formats/openapi/schema.md</code> — no parser source required.</p>
+<p>Later, adopt more formats with <code>fuego formats add &lt;name&gt;</code> and refresh the
+contracts after upgrades with <code>fuego formats sync</code>
+(<a href="docs/cli/#formats">CLI reference</a>).</p>
+<h2>Where to go next</h2>
+<ul>
+<li>Deploy the result: <a href="docs/how-to/deploy-github-pages/">GitHub Pages</a> or the
+<a href="docs/how-to/deploy-with-reusable-workflows/">reusable workflows</a> — rebuild
+on push and the site always matches the repo.</li>
+<li>Turn your theme into a shareable pack, or a specialized engine of your own:
+<a href="docs/tutorials/build-a-format-pack/">Build a Format Pack</a> and
+<a href="docs/concepts/specialized-engine/">The Specialized Engine</a>.</li>
+</ul>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>

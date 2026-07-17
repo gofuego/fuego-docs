@@ -33,10 +33,19 @@
     <div class="nav-group">
         <p class="nav-heading">Concepts</p>
         <ul>
+            <li><a href="/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
             <li><a href="/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
             <li><a href="/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
             <li><a href="/fuego-docs/docs/concepts/format-packs/" class="current">Format Packs</a></li>
             <li><a href="/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Ecosystem</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/ecosystem/">Themes, Packs &amp; Demos</a></li>
         </ul>
     </div>
     
@@ -54,15 +63,6 @@
     </div>
     
     <div class="nav-group">
-        <p class="nav-heading">Tutorials</p>
-        <ul>
-            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
-            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
-            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
-        </ul>
-    </div>
-    
-    <div class="nav-group">
         <p class="nav-heading">Reference</p>
         <ul>
             <li><a href="/fuego-docs/docs/configuration/">Configuration</a></li>
@@ -71,6 +71,16 @@
             <li><a href="/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
             <li><a href="/fuego-docs/docs/hooks/">Hooks</a></li>
             <li><a href="/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/fuego-docs/docs/tutorials/render-a-repos-artifacts/">Tutorial: Render a Repo&#39;s Artifacts</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
         </ul>
     </div>
 </nav>
@@ -181,6 +191,17 @@ func Pack() core.Pack {
 <li>A <code>packs.{name}:</code> subtree with no matching registered pack logs a warning naming the known packs — typos don't pass silently.</li>
 <li>Parsers and hooks registered in <code>Init</code> follow the same precedence as those declared on the <code>Pack</code> struct.</li>
 </ul>
+<h2>Packs in the wild</h2>
+<p>Every shipped Fuego tool is a pack you can import directly:
+<a href="https://github.com/gofuego/fuego-adr">fuego-adr</a> (<code>adr.Pack()</code>),
+<a href="https://github.com/gofuego/fuego-devops">fuego-devops</a> (<code>devops.Pack()</code>),
+<a href="https://github.com/gofuego/fuego-dotclaude">fuego-dotclaude</a>, and
+<a href="https://github.com/gofuego/fuego-systheme">fuego-systheme</a>
+(<code>systheme.Pack()</code>), plus the
+<a href="https://github.com/gofuego/fuego-doctheme">fuego-doctheme</a> theme packs this
+site is built with. Each pairs with a live demo — see
+<a href="docs/ecosystem/">Themes, Packs &amp; Demos</a>. To write one, start with the
+<a href="docs/tutorials/build-a-format-pack/">tutorial</a>.</p>
 
 </article>
 
