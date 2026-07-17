@@ -2,8 +2,8 @@
 title: "Tutorial: Your First Compiled Parser"
 layout: doc
 nav_section: "Tutorials"
-nav_weight: 2
-order: 2
+nav_weight: 3
+order: 3
 tags:
   - tutorial
   - parsers

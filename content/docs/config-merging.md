@@ -58,14 +58,17 @@ Deep merges can make "why is this value what it is?" hard to answer. The `fuego 
 
 ```console
 $ fuego config
-routes:
-  adr: /decisions/{slug}   # user
-taxonomies:
-  status:                  # pack: adr
-    path: /status/{term}   # pack: adr
+routes: # pack: adr
+    adr: /decisions/{slug} # user
+taxonomies: # pack: adr
+    status: # pack: adr
+        path: /status/{term} # pack: adr
 ```
 
-Output is deterministic (keys sorted), so it is safe to diff across changes.
+A key is attributed to the layer that introduced it, and a value a later layer
+overrode is attributed to the layer that won — here the pack introduced
+`routes`, but the user's override owns `routes.adr`. Output is deterministic
+(keys sorted), so it is safe to diff across changes.
 
 ## Validation
 

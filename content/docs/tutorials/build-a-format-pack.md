@@ -2,8 +2,8 @@
 title: "Tutorial: Build a Format Pack"
 layout: doc
 nav_section: "Tutorials"
-nav_weight: 3
-order: 3
+nav_weight: 2
+order: 2
 tags:
   - tutorial
   - packs
@@ -153,4 +153,4 @@ defaults to the module path's last segment; if yours differs, consumers pass
 - Precedence always favors the user: user parsers, user theme files, and user config win over the pack.
 - Consumers install it with one line — `eng.Use(...)` — or scaffold with `fuego init --pack`.
 
-See [Format Packs](docs/concepts/format-packs/) for the full reference and [Config Merging](docs/config-merging/) for the merge rules.
+See [Format Packs](docs/concepts/format-packs/) for the full reference and [Config Merging](docs/config-merging/) for the merge rules. For a production-scale reference, read [fuego-systheme](https://github.com/gofuego/fuego-systheme): a pack registering eight formats' parsers with a complete theme, driven by a thin CLI as a [specialized engine](docs/concepts/specialized-engine/) over any repository.

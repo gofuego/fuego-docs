@@ -2,7 +2,7 @@
 title: Format Packs
 layout: doc
 nav_section: "Concepts"
-nav_weight: 3
+nav_weight: 5
 tags:
   - concepts
   - packs
@@ -103,3 +103,16 @@ Rules:
 - An `Init` error halts the build as `pack "{name}": <your error>`.
 - A `packs.{name}:` subtree with no matching registered pack logs a warning naming the known packs — typos don't pass silently.
 - Parsers and hooks registered in `Init` follow the same precedence as those declared on the `Pack` struct.
+
+## Packs in the wild
+
+Every shipped Fuego tool is a pack you can import directly:
+[fuego-adr](https://github.com/gofuego/fuego-adr) (`adr.Pack()`),
+[fuego-devops](https://github.com/gofuego/fuego-devops) (`devops.Pack()`),
+[fuego-dotclaude](https://github.com/gofuego/fuego-dotclaude), and
+[fuego-systheme](https://github.com/gofuego/fuego-systheme)
+(`systheme.Pack()`), plus the
+[fuego-doctheme](https://github.com/gofuego/fuego-doctheme) theme packs this
+site is built with. Each pairs with a live demo — see
+[Themes, Packs & Demos](docs/ecosystem/). To write one, start with the
+[tutorial](docs/tutorials/build-a-format-pack/).

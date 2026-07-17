@@ -20,8 +20,9 @@
 <nav class="sidebar" aria-label="Documentation">
     {{template "navGroup" (dict "Site" .Site "BaseURL" .Site.BaseURL "Current" .Page.URL "Section" "Getting Started")}}
     {{template "navGroup" (dict "Site" .Site "BaseURL" .Site.BaseURL "Current" .Page.URL "Section" "Concepts")}}
+    {{template "navGroup" (dict "Site" .Site "BaseURL" .Site.BaseURL "Current" .Page.URL "Section" "Ecosystem")}}
     {{template "navGroup" (dict "Site" .Site "BaseURL" .Site.BaseURL "Current" .Page.URL "Section" "Guides")}}
-    {{template "navGroup" (dict "Site" .Site "BaseURL" .Site.BaseURL "Current" .Page.URL "Section" "Tutorials")}}
     {{template "navGroup" (dict "Site" .Site "BaseURL" .Site.BaseURL "Current" .Page.URL "Section" "Reference")}}
+    {{template "navGroup" (dict "Site" .Site "BaseURL" .Site.BaseURL "Current" .Page.URL "Section" "Tutorials")}}
 </nav>
 {{- end}}

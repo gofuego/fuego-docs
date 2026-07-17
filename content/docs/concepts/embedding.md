@@ -2,7 +2,7 @@
 title: Embedding Fuego
 layout: doc
 nav_section: "Concepts"
-nav_weight: 4
+nav_weight: 6
 tags:
   - concepts
   - go
@@ -13,7 +13,10 @@ Fuego isn't only a CLI — it's a library for **building your own static site
 generator**. A domain-specific tool (an ADR site builder, an infra-diagram
 generator, a changelog publisher) is typically a [format pack](docs/concepts/format-packs/)
 plus a thin program that drives the engine in-process. [fuego-adr](https://github.com/gofuego/fuego-adr)
-is exactly this shape.
+and [fuego-systheme](https://github.com/gofuego/fuego-systheme) are exactly
+this shape — and when the tool renders a repository it doesn't own, that's the
+[specialized engine](docs/concepts/specialized-engine/) pattern; this page is
+the API reference it builds on.
 
 ## Two ways to drive the engine
 
@@ -56,9 +59,14 @@ func main() {
 }
 ```
 
-`engine.Serve(ctx, opts)` runs the dev server (initial build, watch, live
-reload, HTTP); `engine.Validate(ctx, opts)` runs the pipeline through INDEX
+`eng.Serve(ctx, opts)` runs the dev server (initial build, watch, live
+reload, HTTP); `eng.Validate(ctx, opts)` runs the pipeline through INDEX
 without rendering and returns the page count — a CI gate.
+
+`ContentDir` can be any directory — including the root of a repository your
+tool doesn't own. Point `OutputDir` (and `CacheDir`) elsewhere and the build
+reads the repo without writing anything into it; see
+[The Specialized Engine](docs/concepts/specialized-engine/).
 
 ### BuildOptions
 
@@ -94,4 +102,5 @@ The recommended shape, as used by fuego-adr:
 
 Users then get both: your branded CLI, and the ability to drop your pack into
 any Fuego project with one line. See the
-[Build a Format Pack](docs/tutorials/build-a-format-pack/) tutorial.
+[Build a Format Pack](docs/tutorials/build-a-format-pack/) tutorial, and the
+[ecosystem page](docs/ecosystem/) for the shipped tools built this way.
