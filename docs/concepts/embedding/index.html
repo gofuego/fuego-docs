@@ -33,10 +33,19 @@
     <div class="nav-group">
         <p class="nav-heading">Concepts</p>
         <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/" class="current">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Ecosystem</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/ecosystem/">Themes, Packs &amp; Demos</a></li>
         </ul>
     </div>
     
@@ -54,15 +63,6 @@
     </div>
     
     <div class="nav-group">
-        <p class="nav-heading">Tutorials</p>
-        <ul>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
-        </ul>
-    </div>
-    
-    <div class="nav-group">
         <p class="nav-heading">Reference</p>
         <ul>
             <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
@@ -71,6 +71,16 @@
             <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
             <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
             <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/render-a-repos-artifacts/">Tutorial: Render a Repo&#39;s Artifacts</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
         </ul>
     </div>
 </nav>
@@ -83,7 +93,10 @@
 generator</strong>. A domain-specific tool (an ADR site builder, an infra-diagram
 generator, a changelog publisher) is typically a <a href="docs/concepts/format-packs/">format pack</a>
 plus a thin program that drives the engine in-process. <a href="https://github.com/gofuego/fuego-adr">fuego-adr</a>
-is exactly this shape.</p>
+and <a href="https://github.com/gofuego/fuego-systheme">fuego-systheme</a> are exactly
+this shape — and when the tool renders a repository it doesn't own, that's the
+<a href="docs/concepts/specialized-engine/">specialized engine</a> pattern; this page is
+the API reference it builds on.</p>
 <h2>Two ways to drive the engine</h2>
 <pre><code class="language-go">eng := engine.New()
 eng.Register(markdown.Parser())
@@ -119,9 +132,13 @@ func main() {
 	}
 }
 </code></pre>
-<p><code>engine.Serve(ctx, opts)</code> runs the dev server (initial build, watch, live
-reload, HTTP); <code>engine.Validate(ctx, opts)</code> runs the pipeline through INDEX
+<p><code>eng.Serve(ctx, opts)</code> runs the dev server (initial build, watch, live
+reload, HTTP); <code>eng.Validate(ctx, opts)</code> runs the pipeline through INDEX
 without rendering and returns the page count — a CI gate.</p>
+<p><code>ContentDir</code> can be any directory — including the root of a repository your
+tool doesn't own. Point <code>OutputDir</code> (and <code>CacheDir</code>) elsewhere and the build
+reads the repo without writing anything into it; see
+<a href="docs/concepts/specialized-engine/">The Specialized Engine</a>.</p>
 <h3>BuildOptions</h3>
 <table>
 <thead>
@@ -177,7 +194,8 @@ config, and your tool sets the dirs and site metadata on top — all deep-merged
 </ol>
 <p>Users then get both: your branded CLI, and the ability to drop your pack into
 any Fuego project with one line. See the
-<a href="docs/tutorials/build-a-format-pack/">Build a Format Pack</a> tutorial.</p>
+<a href="docs/tutorials/build-a-format-pack/">Build a Format Pack</a> tutorial, and the
+<a href="docs/ecosystem/">ecosystem page</a> for the shipped tools built this way.</p>
 
 </article>
 

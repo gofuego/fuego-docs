@@ -5,7 +5,7 @@
     <link>/gofuego/fuego-docs</link>
     <description>Documentation for the Fuego static site engine.</description>
     <item>
-      <title>The meta-engine for static sites</title>
+      <title>The non-invasive render engine framework</title>
       <link>/gofuego/fuego-docs/</link>
     </item>
     <item>
@@ -29,6 +29,14 @@
       <link>/gofuego/fuego-docs/docs/concepts/format-packs/</link>
     </item>
     <item>
+      <title>The Specialized Engine</title>
+      <link>/gofuego/fuego-docs/docs/concepts/specialized-engine/</link>
+    </item>
+    <item>
+      <title>Two Modes of Use</title>
+      <link>/gofuego/fuego-docs/docs/concepts/two-modes/</link>
+    </item>
+    <item>
       <title>Config Merging</title>
       <link>/gofuego/fuego-docs/docs/config-merging/</link>
     </item>
@@ -39,6 +47,10 @@
     <item>
       <title>Custom Parsers</title>
       <link>/gofuego/fuego-docs/docs/custom-parsers/</link>
+    </item>
+    <item>
+      <title>Themes, Packs & Demos</title>
+      <link>/gofuego/fuego-docs/docs/ecosystem/</link>
     </item>
     <item>
       <title>Getting Started</title>
@@ -87,6 +99,10 @@
     <item>
       <title>Tutorial: Build a Quiz Site</title>
       <link>/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/</link>
+    </item>
+    <item>
+      <title>Tutorial: Render a Repo's Artifacts</title>
+      <link>/gofuego/fuego-docs/docs/tutorials/render-a-repos-artifacts/</link>
     </item>
     <item>
       <title>Tutorial: Your First Compiled Parser</title>

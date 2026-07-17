@@ -33,10 +33,19 @@
     <div class="nav-group">
         <p class="nav-heading">Concepts</p>
         <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/" class="current">Why Format-Agnostic?</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Ecosystem</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/ecosystem/">Themes, Packs &amp; Demos</a></li>
         </ul>
     </div>
     
@@ -54,15 +63,6 @@
     </div>
     
     <div class="nav-group">
-        <p class="nav-heading">Tutorials</p>
-        <ul>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
-        </ul>
-    </div>
-    
-    <div class="nav-group">
         <p class="nav-heading">Reference</p>
         <ul>
             <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
@@ -73,6 +73,16 @@
             <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
         </ul>
     </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/render-a-repos-artifacts/">Tutorial: Render a Repo&#39;s Artifacts</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+        </ul>
+    </div>
 </nav>
 
     <main>
@@ -80,46 +90,43 @@
 <article class="doc">
     <h1>Why Format-Agnostic?</h1>
     <p>Most static site generators treat Markdown as the default content format. Hugo, Jekyll, Eleventy — they all parse Markdown first and offer limited escape hatches for other formats. Fuego inverts this: <strong>no format is privileged</strong>.</p>
-<h2>The Problem with Markdown-First</h2>
-<p>Markdown is great for prose. But not all content is prose:</p>
-<ul>
-<li><strong>Flashcards</strong> have a front and a back. Markdown can't express that naturally.</li>
-<li><strong>Quiz questions</strong> have a prompt, choices, and a correct answer. Markdown requires awkward conventions.</li>
-<li><strong>Product cards</strong> have structured fields (price, rating, image). Markdown frontmatter can carry metadata, but the body is still unstructured.</li>
-<li><strong>Slide decks</strong> need slide boundaries and speaker notes. Markdown uses <code>---</code> separators as a hack.</li>
-</ul>
-<p>When your SSG is Markdown-first, you end up encoding structure in conventions: specific heading levels mean specific things, custom HTML blocks break the abstraction, and frontmatter becomes a dumping ground.</p>
+<h2>Your content is already structured</h2>
+<p>Look at what a repository actually contains: an OpenAPI spec, a DBML schema, Kubernetes manifests, decision records, Playwright suites, Mermaid diagrams. Each is precise, structured, and machine-readable — an operation has a method, a path, parameters, responses; a table has columns, keys, refs. None of it is prose.</p>
+<p>A Markdown-first generator can only publish that content as a hand-written <em>description</em> of it — a second copy that starts drifting the moment it's written. A format-agnostic engine renders the artifact itself: the parser understands the format's real structure, and the site can never disagree with the source. That's the foundation of the <a href="docs/concepts/specialized-engine/">specialized engine</a> pattern — and of docs that stay correct because they're rendered, not rewritten.</p>
 <h2>Fuego's Approach</h2>
 <p>In Fuego, the content format is a first-class concept:</p>
 <ol>
 <li><strong>You define the syntax</strong> — via regex rules in config or a Go parser</li>
-<li><strong>You define the semantics</strong> — node types like <code>question</code>, <code>front</code>, <code>ingredient</code> carry meaning</li>
+<li><strong>You define the semantics</strong> — node types like <code>operation</code>, <code>table</code>, <code>front</code> carry meaning</li>
 <li><strong>You define the rendering</strong> — template per node type, or CSS on <code>data-type</code> attributes</li>
 </ol>
-<p>The engine never interprets what a <code>question</code> node means. It just knows how to discover files, dispatch them to parsers, route the results, and render templates. Your DSL, your rules.</p>
+<p>The engine never interprets what an <code>operation</code> node means. It just knows how to discover files, dispatch them to parsers, route the results, and render templates. Your format, your rules.</p>
 <h2>The Universal AST</h2>
 <p>All parsers — Markdown, declarative regex, compiled Go — produce the same output:</p>
 <pre><code class="language-go">type Node struct {
-    Type       string            // &quot;question&quot;, &quot;front&quot;, &quot;html&quot;, anything
+    Type       string            // &quot;operation&quot;, &quot;front&quot;, &quot;html&quot;, anything
     Attributes map[string]any    // structured metadata
     Content    string            // text content
     Children   []Node            // nested nodes
     Raw        bool              // emit Content as raw HTML, unwrapped
 }
 </code></pre>
-<p>This uniformity means the entire pipeline after PARSE is format-agnostic. Routing, taxonomy indexing, collections, rendering, manifest generation — all work the same regardless of whether the content started as <code>.md</code>, <code>.trivia</code>, or <code>.recipe</code>.</p>
+<p>This uniformity means the entire pipeline after PARSE is format-agnostic. Routing, taxonomy indexing, collections, rendering, manifest generation — all work the same regardless of whether the content started as <code>.md</code>, <code>.openapi.yaml</code>, or <code>.dbml</code>.</p>
+<p>And a file doesn't have to become exactly one page: a <strong>tree parser</strong> returns a whole tree of pages from one artifact, so an API spec expands into an index plus a routed page per tag, operation, and schema — each visible to taxonomies and collections like any other page. See <a href="docs/custom-parsers/">Custom Parsers</a>.</p>
 <h2>Markdown is Still First-Class</h2>
 <p>Format-agnostic doesn't mean anti-Markdown. Fuego ships a first-party Markdown parser with full GFM support (tables, strikethrough, autolinks, task lists) — you opt in by registering it (<code>eng.Register(markdown.Parser())</code>), the same way you'd register any parser. It emits a single <code>Raw: true</code> node that the renderer passes through as HTML.</p>
-<p>You can even mix formats in the same site: Markdown for blog posts, <code>.trivia</code> for quiz pages, <code>.card</code> for flashcards. Each file dispatches to the parser that claims it — by filename pattern or bare extension, most specific claim first — and the pipeline handles the rest.</p>
+<p>You can mix formats freely in one site: Markdown for the prose, <code>.openapi.yaml</code> for the API section, <code>.adr.md</code> for decisions. Each file dispatches to the parser that claims it — by filename pattern or bare extension, most specific claim first — and the pipeline handles the rest.</p>
+<h2>Custom DSLs, too</h2>
+<p>The same machinery covers content you author yourself. A flashcard has a front and a back; a quiz question has a prompt, choices, and a correct answer — structure Markdown can only fake with conventions. Define a small DSL instead (<code>.card</code>, <code>.trivia</code>), declaratively <a href="docs/custom-parsers/">in config</a> or as a compiled parser, and author in a syntax that matches the content. The <a href="docs/tutorials/build-a-quiz-site/">quiz-site tutorial</a> builds one end to end.</p>
 <h2>When This Matters</h2>
 <p>Format-agnostic design shines when:</p>
 <ul>
-<li><strong>Your content has inherent structure</strong> that Markdown can't express</li>
-<li><strong>Non-developers author content</strong> using a simple, domain-specific syntax</li>
+<li><strong>Your repo already holds structured artifacts</strong> — render the source of truth instead of describing it, in your own site or <a href="docs/concepts/specialized-engine/">non-invasively</a> across any matching repo</li>
+<li><strong>Your content has inherent structure</strong> that Markdown can't express — define a DSL for it</li>
 <li><strong>Client-side interactivity</strong> needs typed data (the JSON embed carries the full AST)</li>
 <li><strong>Multiple content types coexist</strong> in one site with different rendering needs</li>
 </ul>
-<p>If all your content is prose, register the first-party Markdown parser and you have a normal Markdown site. The meta-engine architecture is there for when you need more.</p>
+<p>If all your content is prose, register the first-party Markdown parser and you have a normal Markdown site. The framework is there for when you need more.</p>
 
 </article>
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/gofuego/fuego-docs/">
-    <title>Hooks — Fuego</title>
+    <title>Two Modes of Use — Fuego</title>
     <link rel="stylesheet" href="style.css">
     <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
 </head>
@@ -33,7 +33,7 @@
     <div class="nav-group">
         <p class="nav-heading">Concepts</p>
         <ul>
-            <li><a href="/gofuego/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/two-modes/" class="current">Two Modes of Use</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
@@ -69,7 +69,7 @@
             <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
             <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
             <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/hooks/" class="current">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
             <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
         </ul>
     </div>
@@ -88,73 +88,81 @@
     <main>
     
 <article class="doc">
-    <h1>Hooks</h1>
-    <p>Hooks let you transform pages between pipeline phases using Go functions.</p>
-<h2>AfterParse</h2>
-<p>Runs after PARSE, before ROUTE. Use it to enrich or filter pages:</p>
-<pre><code class="language-go">eng := engine.New()
-
-eng.AfterParse(func(pages []*core.Page) ([]*core.Page, error) {
-    for _, p := range pages {
-        words := len(strings.Fields(p.Nodes[0].Content))
-        p.Envelope[&quot;reading_time&quot;] = words / 200
-    }
-    return pages, nil
-})
+    <h1>Two Modes of Use</h1>
+    <p>Fuego is a render-engine <strong>framework</strong>: the pipeline — discovery, parsing,
+routing, taxonomies, rendering — is fixed, and you decide where the engine
+lives. In practice every Fuego deployment is one of two shapes.</p>
+<h2>Mode 1 — a site configured in place</h2>
+<p>The classic static-site shape: a project directory owns its content and drives
+the engine directly.</p>
+<pre><code>mysite/
+  config.yaml      # routes, taxonomies, collections, parsers
+  main.go          # registers parsers, packs, hooks
+  content/         # the content, written for this site
+  theme/           # templates
 </code></pre>
-<h2>Index</h2>
-<p>Runs during INDEX, after taxonomy and collection virtual pages are generated but <strong>before the collision re-check</strong>. This is the supported way to add virtual pages — set their URL and they are collision-checked exactly like engine-generated ones:</p>
-<pre><code class="language-go">eng.Index(func(pages []*core.Page) ([]*core.Page, error) {
-    overview := &amp;core.Page{
-        RelPath:  &quot;virtual:overview&quot;,
-        URL:      &quot;/overview&quot;,
-        Type:     &quot;diagram&quot;,
-        Envelope: core.Envelope{&quot;title&quot;: &quot;Overview&quot;},
-        Nodes: []core.Node{{
-            Type:       &quot;graph-data&quot;,
-            Attributes: map[string]any{&quot;nodes&quot;: buildGraph(pages)},
-        }},
-    }
-    return append(pages, overview), nil
-})
+<p><code>fuego init</code> scaffolds this shape (<a href="docs/getting-started/">Getting Started</a>):
+<code>config.yaml</code> carries the declarative concerns, <code>main.go</code> the code-level ones,
+and <code>fuego build</code> writes the site to <code>build/</code>. Pick
+<a href="https://github.com/gofuego/fuego-formats">format modules</a> at scaffold time
+with <code>--formats</code>, or start from a <a href="docs/concepts/format-packs/">format pack</a>
+with <code>--pack</code>.</p>
+<p><strong>When it fits:</strong> docs sites, blogs, any site whose content is written <em>for</em>
+the site. This site is mode 1 — content in <code>content/</code>, theme from
+<a href="https://github.com/gofuego/fuego-doctheme">fuego-doctheme</a>.</p>
+<h2>Mode 2 — a compiled, specialized engine</h2>
+<p>Invert the ownership: the content is an existing repository that knows nothing
+about Fuego. You model the repo's artifacts — which files matter, what
+structure they carry, how they should render — as a
+<a href="docs/concepts/format-packs/">format pack</a>, wrap it in a thin CLI, and point
+the compiled binary at the repo:</p>
+<pre><code class="language-bash">fuego-systheme -site-name &quot;My System&quot; /path/to/repo build
 </code></pre>
-<p>Do not add pages in <code>BeforeRender</code> — pages added there bypass collision detection.</p>
-<h3>Skipping pages</h3>
-<p>Set <code>page.Skip = true</code> in any hook to exclude a page from rendering and the manifest while keeping it visible to later hooks (drafts, internal pages):</p>
-<pre><code class="language-go">eng.Index(func(pages []*core.Page) ([]*core.Page, error) {
-    for _, p := range pages {
-        if p.Envelope[&quot;draft&quot;] == true {
-            p.Skip = true
-        }
-    }
-    return pages, nil
-})
-</code></pre>
-<h2>BeforeRender</h2>
-<p>Runs after INDEX, before RENDER. Pages have their final URLs and taxonomy assignments:</p>
-<pre><code class="language-go">eng.BeforeRender(func(pages []*core.Page) ([]*core.Page, error) {
-    if os.Getenv(&quot;FUEGO_ENV&quot;) == &quot;production&quot; {
-        var published []*core.Page
-        for _, p := range pages {
-            if p.Envelope[&quot;draft&quot;] != true {
-                published = append(published, p)
-            }
-        }
-        return published, nil
-    }
-    return pages, nil
-})
-</code></pre>
-<h2>Behavior</h2>
-<ul>
-<li>Multiple hooks at the same point run in <strong>FIFO</strong> registration order</li>
-<li>Each hook receives the previous hook's output</li>
-<li>Hooks can <strong>mutate</strong> pages (add envelope fields), <strong>filter</strong> them (return a subset), or <strong>skip</strong> them (<code>page.Skip = true</code>)</li>
-<li>Only <code>Index</code> hooks should add pages — additions there go through collision detection</li>
-<li>Hooks run in all commands: <code>build</code>, <code>serve</code>, <code>validate</code>, <code>list</code></li>
-</ul>
-<h2>Why Go-Only?</h2>
-<p>Hooks transform typed Go structs. Shell-based hooks would require JSON serialization round-trips, lose type safety, and add latency. The <code>prebuild</code> config field handles the shell-command use case (npm, tailwind, etc.) since it runs before any pipeline data exists.</p>
+<p>The engine treats the repository as its content directory and writes the site
+somewhere else. Nothing in the repo changes — no config file, no theme
+directory, no cache, no generated content. Because the repo's own artifacts
+are the only input, the rendered site can never drift from them: re-render on
+push and it reflects exactly what's committed.</p>
+<p><a href="docs/concepts/specialized-engine/">The Specialized Engine</a> covers the pattern
+in depth; the <a href="docs/ecosystem/">ecosystem page</a> lists the shipped specialized
+engines — decision records, infrastructure, Claude Code workspaces, whole
+systems — each with a live demo.</p>
+<h2>Same engine, same skills</h2>
+<p>Both modes run the same pipeline with the same parsers, themes, hooks, and
+config semantics — a pack built for an in-place site becomes a specialized
+engine by adding a small CLI over the
+<a href="docs/concepts/embedding/">programmatic API</a>. Choose per project:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>In-place site</th>
+<th>Specialized engine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Content</td>
+<td>written for the site</td>
+<td>already in the repo</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td><code>config.yaml</code> in the project</td>
+<td>compiled in (pack defaults + CLI flags)</td>
+</tr>
+<tr>
+<td>Who runs it</td>
+<td>the site's own <code>main.go</code></td>
+<td>anyone, on any matching repo</td>
+</tr>
+<tr>
+<td>Repo footprint</td>
+<td>the project owns its repo</td>
+<td>zero — non-invasive</td>
+</tr>
+</tbody>
+</table>
 
 </article>
 

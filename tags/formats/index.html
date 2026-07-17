@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/gofuego/fuego-docs/">
-    <title>Hooks — Fuego</title>
+    <title>Tags: formats — Fuego</title>
     <link rel="stylesheet" href="style.css">
     <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
 </head>
@@ -69,7 +69,7 @@
             <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
             <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
             <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/hooks/" class="current">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
             <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
         </ul>
     </div>
@@ -88,74 +88,11 @@
     <main>
     
 <article class="doc">
-    <h1>Hooks</h1>
-    <p>Hooks let you transform pages between pipeline phases using Go functions.</p>
-<h2>AfterParse</h2>
-<p>Runs after PARSE, before ROUTE. Use it to enrich or filter pages:</p>
-<pre><code class="language-go">eng := engine.New()
+    <h1>Tags: formats</h1>
+    <ul class="page-list">
+    <li class="page-ref"><a href="docs/tutorials/render-a-repos-artifacts/">Tutorial: Render a Repo&#39;s Artifacts</a></li>
 
-eng.AfterParse(func(pages []*core.Page) ([]*core.Page, error) {
-    for _, p := range pages {
-        words := len(strings.Fields(p.Nodes[0].Content))
-        p.Envelope[&quot;reading_time&quot;] = words / 200
-    }
-    return pages, nil
-})
-</code></pre>
-<h2>Index</h2>
-<p>Runs during INDEX, after taxonomy and collection virtual pages are generated but <strong>before the collision re-check</strong>. This is the supported way to add virtual pages — set their URL and they are collision-checked exactly like engine-generated ones:</p>
-<pre><code class="language-go">eng.Index(func(pages []*core.Page) ([]*core.Page, error) {
-    overview := &amp;core.Page{
-        RelPath:  &quot;virtual:overview&quot;,
-        URL:      &quot;/overview&quot;,
-        Type:     &quot;diagram&quot;,
-        Envelope: core.Envelope{&quot;title&quot;: &quot;Overview&quot;},
-        Nodes: []core.Node{{
-            Type:       &quot;graph-data&quot;,
-            Attributes: map[string]any{&quot;nodes&quot;: buildGraph(pages)},
-        }},
-    }
-    return append(pages, overview), nil
-})
-</code></pre>
-<p>Do not add pages in <code>BeforeRender</code> — pages added there bypass collision detection.</p>
-<h3>Skipping pages</h3>
-<p>Set <code>page.Skip = true</code> in any hook to exclude a page from rendering and the manifest while keeping it visible to later hooks (drafts, internal pages):</p>
-<pre><code class="language-go">eng.Index(func(pages []*core.Page) ([]*core.Page, error) {
-    for _, p := range pages {
-        if p.Envelope[&quot;draft&quot;] == true {
-            p.Skip = true
-        }
-    }
-    return pages, nil
-})
-</code></pre>
-<h2>BeforeRender</h2>
-<p>Runs after INDEX, before RENDER. Pages have their final URLs and taxonomy assignments:</p>
-<pre><code class="language-go">eng.BeforeRender(func(pages []*core.Page) ([]*core.Page, error) {
-    if os.Getenv(&quot;FUEGO_ENV&quot;) == &quot;production&quot; {
-        var published []*core.Page
-        for _, p := range pages {
-            if p.Envelope[&quot;draft&quot;] != true {
-                published = append(published, p)
-            }
-        }
-        return published, nil
-    }
-    return pages, nil
-})
-</code></pre>
-<h2>Behavior</h2>
-<ul>
-<li>Multiple hooks at the same point run in <strong>FIFO</strong> registration order</li>
-<li>Each hook receives the previous hook's output</li>
-<li>Hooks can <strong>mutate</strong> pages (add envelope fields), <strong>filter</strong> them (return a subset), or <strong>skip</strong> them (<code>page.Skip = true</code>)</li>
-<li>Only <code>Index</code> hooks should add pages — additions there go through collision detection</li>
-<li>Hooks run in all commands: <code>build</code>, <code>serve</code>, <code>validate</code>, <code>list</code></li>
-</ul>
-<h2>Why Go-Only?</h2>
-<p>Hooks transform typed Go structs. Shell-based hooks would require JSON serialization round-trips, lose type safety, and add latency. The <code>prebuild</code> config field handles the shell-command use case (npm, tailwind, etc.) since it runs before any pipeline data exists.</p>
-
+    </ul>
 </article>
 
     </main>

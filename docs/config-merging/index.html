@@ -33,10 +33,19 @@
     <div class="nav-group">
         <p class="nav-heading">Concepts</p>
         <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/specialized-engine/">The Specialized Engine</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
             <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Ecosystem</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/ecosystem/">Themes, Packs &amp; Demos</a></li>
         </ul>
     </div>
     
@@ -54,15 +63,6 @@
     </div>
     
     <div class="nav-group">
-        <p class="nav-heading">Tutorials</p>
-        <ul>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
-            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
-        </ul>
-    </div>
-    
-    <div class="nav-group">
         <p class="nav-heading">Reference</p>
         <ul>
             <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
@@ -71,6 +71,16 @@
             <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
             <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
             <li><a href="/gofuego/fuego-docs/docs/config-merging/" class="current">Config Merging</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/render-a-repos-artifacts/">Tutorial: Render a Repo&#39;s Artifacts</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
         </ul>
     </div>
 </nav>
@@ -128,13 +138,16 @@ taxonomies:
 <h2>Inspecting the result</h2>
 <p>Deep merges can make &quot;why is this value what it is?&quot; hard to answer. The <code>fuego config</code> command prints the fully resolved configuration with a provenance comment on every key:</p>
 <pre><code class="language-console">$ fuego config
-routes:
-  adr: /decisions/{slug}   # user
-taxonomies:
-  status:                  # pack: adr
-    path: /status/{term}   # pack: adr
+routes: # pack: adr
+    adr: /decisions/{slug} # user
+taxonomies: # pack: adr
+    status: # pack: adr
+        path: /status/{term} # pack: adr
 </code></pre>
-<p>Output is deterministic (keys sorted), so it is safe to diff across changes.</p>
+<p>A key is attributed to the layer that introduced it, and a value a later layer
+overrode is attributed to the layer that won — here the pack introduced
+<code>routes</code>, but the user's override owns <code>routes.adr</code>. Output is deterministic
+(keys sorted), so it is safe to diff across changes.</p>
 <h2>Validation</h2>
 <p>Config validation runs <strong>after</strong> the merge, on the resolved result. If a pack contributes an invalid entry — a malformed parser regex, a negative <code>page_size</code> — the error names the contributing pack:</p>
 <pre><code>parser &quot;broken&quot; rule 0: invalid regex &quot;[&quot; (from pack &quot;adr&quot;): ...

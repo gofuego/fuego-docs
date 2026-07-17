@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/gofuego/fuego-docs/">
+    <title>The Specialized Engine — Fuego</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="alternate" type="application/rss+xml" title="Fuego" href="rss.xml">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="." class="logo">Fuego</a>
+        <ul>
+            <li><a href="docs/getting-started/">Get Started</a></li>
+            <li><a href="https://github.com/gofuego/fuego">GitHub</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout">
+    
+<nav class="sidebar" aria-label="Documentation">
+    
+    <div class="nav-group">
+        <p class="nav-heading">Getting Started</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/getting-started/">Getting Started</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Concepts</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/two-modes/">Two Modes of Use</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/specialized-engine/" class="current">The Specialized Engine</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-agnostic/">Why Format-Agnostic?</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/build-pipeline/">The Build Pipeline</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/format-packs/">Format Packs</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/concepts/embedding/">Embedding Fuego</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Ecosystem</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/ecosystem/">Themes, Packs &amp; Demos</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Guides</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-taxonomies/">Add Taxonomies</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/build-a-nav-menu/">Build a Navigation Menu</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/paginate-a-collection/">Paginate a Collection</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/add-feeds-and-sitemaps/">Add an RSS Feed and Sitemap</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-github-pages/">Deploy to GitHub Pages</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/deploy-with-reusable-workflows/">Deploy with Reusable Workflows</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/how-to/check-for-broken-links/">Check for Broken Links</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Reference</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/configuration/">Configuration</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/cli/">CLI Reference</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/templates/">Templates</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/custom-parsers/">Custom Parsers</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/hooks/">Hooks</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/config-merging/">Config Merging</a></li>
+        </ul>
+    </div>
+    
+    <div class="nav-group">
+        <p class="nav-heading">Tutorials</p>
+        <ul>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/render-a-repos-artifacts/">Tutorial: Render a Repo&#39;s Artifacts</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-format-pack/">Tutorial: Build a Format Pack</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/your-first-compiled-parser/">Tutorial: Your First Compiled Parser</a></li>
+            <li><a href="/gofuego/fuego-docs/docs/tutorials/build-a-quiz-site/">Tutorial: Build a Quiz Site</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <main>
+    
+<article class="doc">
+    <h1>The Specialized Engine</h1>
+    <p>A <strong>specialized engine</strong> is a compiled binary that renders a repository it
+doesn't own. You model a class of repos — the artifacts they contain and how
+those artifacts should read as a site — into a
+<a href="docs/concepts/format-packs/">format pack</a>, and a thin CLI turns that pack
+into a tool anyone can point at a matching repo. This is
+<a href="docs/concepts/two-modes/">mode 2</a> of using Fuego, and it's how every shipped
+Fuego tool — <a href="https://github.com/gofuego/fuego-adr">fuego-adr</a>,
+<a href="https://github.com/gofuego/fuego-devops">fuego-devops</a>,
+<a href="https://github.com/gofuego/fuego-dotclaude">fuego-dotclaude</a>,
+<a href="https://github.com/gofuego/fuego-systheme">fuego-systheme</a> — is built.</p>
+<h2>The pattern</h2>
+<p>Three pieces: a pack, the programmatic API, and a content directory that
+points at the target repository.</p>
+<pre><code class="language-go">eng := engine.New()
+eng.Use(systheme.Pack()) // parsers + theme + hooks + config defaults
+
+err := eng.Build(ctx, engine.BuildOptions{
+    ContentDir: repoPath, // the target repository — read, never written
+    OutputDir:  outDir,   // the site goes elsewhere
+    SiteName:   siteName,
+    BaseURL:    baseURL,
+})
+</code></pre>
+<p><code>ContentDir</code> doesn't have to be your project's content folder — it can be any
+directory, including the root of somebody else's repository. Discovery walks
+it, the pack's parsers claim the files they recognize by name
+(<code>*.openapi.yaml</code>, <code>Dockerfile</code>, <code>*.adr.md</code>, …), and everything unclaimed is
+simply not content. The full <code>BuildOptions</code> surface is on
+<a href="docs/concepts/embedding/">Embedding Fuego</a>.</p>
+<h2>Non-invasive by construction</h2>
+<p>The engine reads <code>ContentDir</code> and writes only to <code>OutputDir</code> (plus, for
+incremental builds, <code>CacheDir</code>). Point both away from the target repo and the
+render leaves it untouched: no config file, no theme directory, no cache, no
+generated content. fuego-systheme's dev server, for example, keeps its build
+cache in a temp directory so even <code>serve</code> writes nothing into the scanned
+repo.</p>
+<p>Because the repo's committed artifacts are the only input, the site cannot
+drift from them. Rebuild on every push — the
+<a href="docs/how-to/deploy-with-reusable-workflows/">reusable deploy workflows</a> do —
+and the documentation is <strong>always up to date</strong>: there is no second copy to
+forget to edit.</p>
+<h2>Worked example: fuego-systheme</h2>
+<p><a href="https://github.com/gofuego/fuego-systheme">fuego-systheme</a> is the <em>system
+theme</em>: it registers every <a href="https://github.com/gofuego/fuego-formats">fuego-formats</a>
+parser (plus the engine's Markdown parser) and renders a repository's
+engineering artifacts as one site that reads like the repo itself:</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Becomes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAPI 3 specs</td>
+<td>an API section: index, a page per tag, operation, and schema</td>
+</tr>
+<tr>
+<td>DBML schemas</td>
+<td>a schema index plus a page per table</td>
+</tr>
+<tr>
+<td>Playwright suites</td>
+<td>a page per spec, suite, and test</td>
+</tr>
+<tr>
+<td>Dockerfiles</td>
+<td>a page per build, stage by stage</td>
+</tr>
+<tr>
+<td>Kubernetes manifests</td>
+<td>a page per resource, plus a by-kind taxonomy</td>
+</tr>
+<tr>
+<td>ADRs</td>
+<td>a page per decision, with status and supersession</td>
+</tr>
+<tr>
+<td>Mermaid diagrams</td>
+<td>a page per diagram</td>
+</tr>
+<tr>
+<td>Markdown docs</td>
+<td>prose pages, repo-relative links rewritten to rendered pages</td>
+</tr>
+</tbody>
+</table>
+<p>The output is <strong>visualization-oriented</strong> — the site shows the system rather
+than describing it: a repo-structure sidebar (the file tree, artifacts as
+links) on every page; a landing page that orients (root modules, the decisions
+currently in force, the rendered README); the OpenAPI index shaped like the
+yaml devs already scan; and the DBML schema drawn as an entity-relationship
+diagram generated from the tables, keys, and refs.</p>
+<p>Two engine features carry the pattern. A rich artifact becomes a whole
+<strong>section</strong> of routed pages — an API spec expands into an index plus a page
+per tag, operation, and schema — via tree parsers
+(<a href="docs/custom-parsers/">Custom Parsers</a>). And <code>BeforeRender</code> hooks rewrite the
+repo's own Markdown links (written for the GitHub view) to their rendered
+pages, which is what makes <a href="docs/how-to/check-for-broken-links/"><code>--strict-links</code></a>
+viable over an unmodified repo.</p>
+<p><strong>See it live:</strong> <a href="https://github.com/gofuego/demo-fuego-systheme">demo-fuego-systheme</a>
+— the application repo of a fictional AI service, zero Fuego code committed,
+rendered at
+<a href="https://gofuego.github.io/demo-fuego-systheme/">gofuego.github.io/demo-fuego-systheme</a>.</p>
+<h2>Build your own</h2>
+<ol>
+<li>Put the domain in a pack — parsers, theme, hooks, config defaults
+(<a href="docs/tutorials/build-a-format-pack/">tutorial</a>).</li>
+<li>Wrap it in a CLI that maps flags to <code>engine.BuildOptions</code> and calls
+<code>eng.Build</code> / <code>eng.Serve</code> / <code>eng.Validate</code>
+(<a href="docs/concepts/embedding/">Embedding Fuego</a>).</li>
+<li>Study the shipped engines and their demos on the
+<a href="docs/ecosystem/">ecosystem page</a>.</li>
+</ol>
+
+</article>
+
+    </main>
+</div>
+<footer>
+    <p>Built with Fuego — the format-agnostic static site engine.</p>
+</footer>
+</body>
+</html>
