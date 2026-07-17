@@ -91,6 +91,16 @@ This wires `eng.Use(adr.Pack())` into `main.go` and runs `go get` to install
 it. Add the pack's content under `content/` and `go run . build`. See the
 [CLI reference](docs/cli/#init) for `--pack-symbol`.
 
+### Render an existing repo instead
+
+If the content you want to publish already lives in a repository — API specs,
+schemas, decision records — you may not need a project at all: a
+[specialized engine](docs/concepts/specialized-engine/) like
+[fuego-systheme](https://github.com/gofuego/fuego-systheme) renders a matching
+repo non-invasively, no scaffold required. The
+[Render a Repo's Artifacts](docs/tutorials/render-a-repos-artifacts/) tutorial
+walks both that path and this one.
+
 ## Build
 
 ```bash
